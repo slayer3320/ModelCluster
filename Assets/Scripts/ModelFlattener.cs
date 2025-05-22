@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
+using System.Linq;
 
 public class ModelFlattener : MonoBehaviour
 {
@@ -22,25 +23,40 @@ public class ModelFlattener : MonoBehaviour
         }
     }
 
-    public void FlattenHierarchy(GameObject root)
+
+    List<Transform> childrenToMove = new List<Transform>();
+    public void FlattenHierarchyInChildren(Transform parent, GameObject obj)
     {
-        if (root == null) return;
+        if (parent == null) return;
 
-        Transform[] allChildren = root.GetComponentsInChildren<Transform>(true);
-        List<Transform> childrenToMove = new List<Transform>();
 
-        foreach (Transform child in allChildren)
+        parent.GetComponentsInChildren<Transform>().Where(t => t != parent).ToList().ForEach(t =>
         {
-            if (child != root.transform)
+            if (t.GetComponentsInChildren<Transform>().Where(tt => tt != t).ToList().Count == 0)
             {
-                childrenToMove.Add(child);
+                childrenToMove.Add(t);
             }
+            else
+            {
+                FlattenHierarchyInChildren(t, obj);
+                childrenToMove.Add(t);
+            }
+        });
+
+        foreach (var child in childrenToMove)
+        {
+            child.SetParent(obj.transform);
         }
 
-        // 移动所有子对象到root的直接子级
-        foreach (Transform child in childrenToMove)
-        {
-            child.SetParent(root.transform, true);
-        }
+        childrenToMove.Clear();
+    }
+    
+    public void FlattenHierarchy(GameObject obj)
+    {
+        if (obj == null) return;
+
+        FlattenHierarchyInChildren(obj.transform, obj);
+
+
     }
 }

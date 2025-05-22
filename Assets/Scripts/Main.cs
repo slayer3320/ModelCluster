@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Main : MonoBehaviour
 {
-    void Start()
+    void Awake()
     {
         ModelFlattener.Instance.FlattenHierarchy(this.gameObject);
     }
