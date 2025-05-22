@@ -10,7 +10,7 @@ public class HierarchyUI : MonoBehaviour
     public Transform targetRoot; // 要显示的根物体
     public GameObject itemPrefab; // 每个层级项的预制体
     public RectTransform contentPanel; // ScrollView的内容区域
-    public Color highlightColor = Color.yellow;
+    public Color highlightColor = Color.red;
     public Sprite expandSprite;
     public Sprite collapseSprite;
 
@@ -118,7 +118,7 @@ public class HierarchyUI : MonoBehaviour
         // 清除之前的高亮
         foreach (var selected in selectedObjects)
         {
-            var outlines = selected.GetComponentsInChildren<CustomOutline>();
+            var outlines = selected.GetComponentsInChildren<Outline>();
             foreach (var outline in outlines)
             {
                 Destroy(outline);
@@ -156,18 +156,13 @@ public class HierarchyUI : MonoBehaviour
             var renderers = selected.GetComponentsInChildren<Renderer>();
             foreach (var r in renderers)
             {
-                var outline = r.gameObject.AddComponent<CustomOutline>();
+                var outline = r.gameObject.GetComponent<Outline>() ?? r.gameObject.AddComponent<Outline>();
                 outline.OutlineColor = highlightColor;
-                outline.OutlineWidth = 5f;
-                outline.OutlineMode = CustomOutline.Mode.OutlineVisible;
+                outline.OutlineWidth = 1.68f;
+                outline.OutlineMode = Outline.Mode.OutlineAndSilhouette;
             }
         }
         
-        // 将物体显示在场景视图中央
-        if (selectedObjects.Count == 1 && SceneView.lastActiveSceneView != null)
-        {
-            SceneView.lastActiveSceneView.Frame(obj.GetComponent<Renderer>().bounds);
-        }
     }
 
     public void MergeSelectedObjects()
