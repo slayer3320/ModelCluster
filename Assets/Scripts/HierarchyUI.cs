@@ -30,6 +30,7 @@ public class HierarchyUI : MonoBehaviour
     void BuildHierarchy(Transform root, int indent = 0, bool parentExpanded = true)
     {
         if (!parentExpanded) return;
+        if (root.gameObject.layer == LayerMask.NameToLayer("NoShow")) return;
 
         // 创建UI项
         var uiItem = Instantiate(itemPrefab, contentPanel);

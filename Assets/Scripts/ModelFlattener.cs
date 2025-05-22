@@ -40,6 +40,7 @@ public class ModelFlattener : MonoBehaviour
             {
                 FlattenHierarchyInChildren(t, obj);
                 childrenToMove.Add(t);
+                t.gameObject.layer = LayerMask.NameToLayer("NoShow");
             }
         });
 
