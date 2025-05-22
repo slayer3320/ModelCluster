@@ -4,6 +4,7 @@ public class CameraControl : MonoBehaviour
 {
     [Header("Camera Settings")]
     public float rotationSpeed = 5f;
+    public float panSpeed = 5f;
     public float distance = 10f;
     public float minDistance = 2f;
     public float maxDistance = 20f;
@@ -11,14 +12,19 @@ public class CameraControl : MonoBehaviour
 
     private float currentX = 0f;
     private float currentY = 30f;
-
-    void Start()
-    {
-        UpdateCameraPosition();
-    }
+    private float panX = 0f;
+    private float panY = 0f;
+    public Vector3 lookAtPoint = Vector3.zero;
 
     void Update()
     {
+        if (Input.GetMouseButton(2))
+        {
+            panX = Input.GetAxis("Mouse X") * panSpeed;
+            panY = Input.GetAxis("Mouse Y") * panSpeed;
+            lookAtPoint = lookAtPoint + new Vector3(panX, panY, 0);
+        }
+
         if (Input.GetMouseButton(0))
         {
             currentX += Input.GetAxis("Mouse X") * rotationSpeed;
@@ -33,15 +39,10 @@ public class CameraControl : MonoBehaviour
             distance = Mathf.Clamp(distance, minDistance, maxDistance);
         }
 
-        UpdateCameraPosition();
-    }
-
-    void UpdateCameraPosition()
-    {
         Vector3 dir = new Vector3(0, 0, -distance);
         Quaternion rotation = Quaternion.Euler(currentY, currentX, 0);
         transform.position = rotation * dir;
         
-        transform.LookAt(Vector3.zero);
+        transform.LookAt(lookAtPoint);
     }
 }
