@@ -73,31 +73,6 @@ public class HierarchyUI : MonoBehaviour
         var dragHandler = uiItem.AddComponent<HierarchyDragHandler>();
         dragHandler.Initialize(this, root.gameObject);
 
-        // 添加合并按钮
-        var mergeButton = new GameObject("MergeButton");
-        var mergeRect = mergeButton.AddComponent<RectTransform>();
-        mergeRect.SetParent(uiItem.transform);
-        mergeRect.anchoredPosition = new Vector2(150, 0);
-        mergeRect.sizeDelta = new Vector2(60, 20);
-        
-        var mergeImage = mergeButton.AddComponent<Image>();
-        mergeImage.color = new Color(0.2f, 0.6f, 1f);
-        
-        var mergeText = new GameObject("Text");
-        var textRect = mergeText.AddComponent<RectTransform>();
-        textRect.SetParent(mergeRect);
-        textRect.anchoredPosition = Vector2.zero;
-        textRect.sizeDelta = Vector2.zero;
-        
-        var textComp = mergeText.AddComponent<Text>();
-        textComp.text = "合并";
-        textComp.alignment = TextAnchor.MiddleCenter;
-        textComp.color = Color.white;
-        
-        var mergeBtn = mergeButton.AddComponent<Button>();
-        mergeBtn.onClick.AddListener(MergeSelectedObjects);
-        mergeButton.SetActive(false); // 默认隐藏
-
         uiItems[root.gameObject] = uiItem;
 
         // 递归处理子物体
@@ -212,14 +187,12 @@ public class HierarchyUI : MonoBehaviour
 
     void RebuildHierarchy()
     {
-        // 清除现有UI
         foreach (var item in uiItems.Values)
         {
             Destroy(item);
         }
         uiItems.Clear();
 
-        // 重新构建
         if (targetRoot != null)
         {
             BuildHierarchy(targetRoot);
