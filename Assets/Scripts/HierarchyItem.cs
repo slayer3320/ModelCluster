@@ -15,16 +15,25 @@ public class HierarchyItem : MonoBehaviour
     public Transform verticalLayoutGroup;
 
     public int childCount = 0;
-    public bool showChildren = false;
+    public int actualChildCount = 0;
+    public bool showChildren = true;
 
     void Awake()
     {
-        
+
     }
 
     void Update()
     {
-        childCount = GetComponentsInChildren<HierarchyItem>(true).Where(x => x.gameObject != gameObject).Count();
+        Expand();
+        ChangeToggleSprite();
+    }
+
+    public void Expand()
+    {
+        childCount = showChildren ? GetComponentsInChildren<HierarchyItem>(true).Where(x => x.gameObject != gameObject).Count() : 0;
+        actualChildCount = GetComponentsInChildren<HierarchyItem>(true).Where(x => x.gameObject != gameObject).Count();
+        verticalLayoutGroup.gameObject.SetActive(showChildren);
         parentLayoutElement.preferredHeight = 20 + 25 * childCount;
         rectTransform.localPosition = new Vector3
         (
@@ -34,17 +43,27 @@ public class HierarchyItem : MonoBehaviour
         );
     }
 
-    public void UpdateExpansion()
+    public void ChangeToggleSprite()
     {
-        childCount = GetComponentsInChildren<HierarchyItem>(true).Where(x => x.gameObject != gameObject).Count();
-        parentLayoutElement.preferredHeight = 20 + 25 * childCount;
-        rectTransform.position = new Vector3
-        (
-            rectTransform.position.x,
-            (parentLayoutElement.preferredHeight - 20) / 2,
-            rectTransform.position.z
-        );
-    }
+        if (actualChildCount == 0)
+        {
+            expandButton.GetComponent<Image>().color = new Color(1, 1, 1, 0);
+        }
+        else
+        {
+            if (showChildren)
+            {
+                expandButton.GetComponent<Image>().sprite = HierarchyUI.Instance.expandSprite;
+                expandButton.GetComponent<Image>().color = new Color(1, 1, 1, 1);
+            }
+            else
+            {
+                expandButton.GetComponent<Image>().sprite = HierarchyUI.Instance.collapseSprite;
+                expandButton.GetComponent<Image>().color = new Color(1, 1, 1, 1);
+            }
+        }
 
+        
+    }
 
 }
