@@ -6,16 +6,36 @@ using UnityEngine.UI;
 
 public class HierarchyItem : MonoBehaviour
 {
-    private LayoutElement parentLayoutElement;
-    private RectTransform rectTransform;
+    public LayoutElement parentLayoutElement;
+    public RectTransform rectTransform;
+
+    public Button expandButton;
+    public Button button;
+    public Text text;
+    public Transform verticalLayoutGroup;
 
     public int childCount = 0;
+    public bool showChildren = false;
 
     void Awake()
     {
-        parentLayoutElement = transform.parent.GetComponent<LayoutElement>();
-        rectTransform = GetComponent<RectTransform>();
+        
+    }
 
+    void Update()
+    {
+        childCount = GetComponentsInChildren<HierarchyItem>(true).Where(x => x.gameObject != gameObject).Count();
+        parentLayoutElement.preferredHeight = 20 + 25 * childCount;
+        rectTransform.localPosition = new Vector3
+        (
+            rectTransform.localPosition.x,
+            (parentLayoutElement.preferredHeight - 20) / 2,
+            rectTransform.localPosition.z
+        );
+    }
+
+    public void UpdateExpansion()
+    {
         childCount = GetComponentsInChildren<HierarchyItem>(true).Where(x => x.gameObject != gameObject).Count();
         parentLayoutElement.preferredHeight = 20 + 25 * childCount;
         rectTransform.position = new Vector3
@@ -26,17 +46,5 @@ public class HierarchyItem : MonoBehaviour
         );
     }
 
-    void Update()
-    {
-        childCount = GetComponentsInChildren<HierarchyItem>().Where(x => x.gameObject != gameObject).Count();
-        parentLayoutElement.preferredHeight = 20 + 25 * childCount;
-        rectTransform.localPosition = new Vector3
-        (
-            rectTransform.localPosition.x,
-            (parentLayoutElement.preferredHeight - 20) / 2,
-            rectTransform.localPosition.z
-        );
-    }
 
-    
 }

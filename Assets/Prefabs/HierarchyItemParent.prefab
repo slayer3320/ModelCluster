@@ -131,7 +131,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2e52e4048ab91c642afb5a62f736756a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  parentLayoutElement: {fileID: 7775237670620399727}
+  rectTransform: {fileID: 6988977113910059650}
+  expandButton: {fileID: 6983379221012919270}
+  button: {fileID: 2368629909402648533}
+  text: {fileID: 707798350708569567}
+  verticalLayoutGroup: {fileID: 2967786972354905072}
   childCount: 0
+  showChildren: 1
 --- !u!1 &3054523974474506260
 GameObject:
   m_ObjectHideFlags: 0

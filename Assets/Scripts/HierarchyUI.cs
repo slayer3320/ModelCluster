@@ -4,6 +4,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.Rendering.Universal;
 using UnityEditor;
 using System.Collections.Generic;
+using System.Linq;
 
 public class HierarchyUI : MonoBehaviour
 {
@@ -23,67 +24,24 @@ public class HierarchyUI : MonoBehaviour
     {
         if (targetRoot != null)
         {
-            BuildHierarchy(targetRoot);
+            BuildHierarchy(targetRoot, contentPanel);
         }
     }
 
-    void BuildHierarchy(Transform root, int indent = 0, bool parentExpanded = true)
+    void BuildHierarchy(Transform root, Transform uiParent)
     {
-        if (!parentExpanded) return;
         if (root.gameObject.layer == LayerMask.NameToLayer("NoShow")) return;
 
-        // 创建UI项
-        var uiItem = Instantiate(itemPrefab, contentPanel);
-        var rect = uiItem.GetComponent<RectTransform>();
-        rect.anchoredPosition = new Vector2(indent * 20, -contentPanel.childCount * 30);
-
-        // 设置文本显示
-        var text = uiItem.GetComponentInChildren<Text>();
-        text.text = root.name;
-
-        // 设置展开/折叠图标
-        var expandIcon = uiItem.transform.Find("ExpandIcon")?.GetComponent<Image>();
-        bool hasChildren = root.childCount > 0;
+        var uiItem = Instantiate(itemPrefab, uiParent);
+        HierarchyItem itemScript = uiItem.transform.GetChild(0).GetComponent<HierarchyItem>();
+        //itemScript.expandButton
+        //itemScript.button.onClick.AddListener(() => HighlightObject(root.gameObject));
+        itemScript.text.text = root.name;
         
-        if (expandIcon != null && hasChildren)
+        root.GetComponentsInChildren<Transform>(true).Where(x => x.gameObject != root.gameObject).ToList().ForEach(x =>
         {
-            bool isExpanded = expandedStates.ContainsKey(root.gameObject) ? 
-                expandedStates[root.gameObject] : true;
-                
-            expandIcon.sprite = isExpanded ? collapseSprite : expandSprite;
-            expandIcon.gameObject.SetActive(true);
-
-            // 添加展开/折叠点击事件
-            var expandButton = expandIcon.GetComponent<Button>();
-            if (expandButton != null)
-            {
-                expandButton.onClick.AddListener(() => ToggleExpand(root.gameObject));
-            }
-        }
-        else if (expandIcon != null)
-        {
-            expandIcon.gameObject.SetActive(false);
-        }
-
-        // 添加点击事件
-        var button = uiItem.GetComponent<Button>();
-        button.onClick.AddListener(() => HighlightObject(root.gameObject));
-
-        // 添加拖拽组件
-        var dragHandler = uiItem.AddComponent<HierarchyDragHandler>();
-        dragHandler.Initialize(this, root.gameObject);
-
-        uiItems[root.gameObject] = uiItem;
-
-        // 递归处理子物体
-        bool showChildren = hasChildren && 
-            expandedStates.ContainsKey(root.gameObject) ? 
-            expandedStates[root.gameObject] : true;
-            
-        foreach (Transform child in root)
-        {
-            BuildHierarchy(child, indent + 1, showChildren);
-        }
+            BuildHierarchy(x, itemScript.verticalLayoutGroup);
+        });
     }
 
     public void HighlightObject(GameObject obj)
@@ -195,7 +153,7 @@ public class HierarchyUI : MonoBehaviour
 
         if (targetRoot != null)
         {
-            BuildHierarchy(targetRoot);
+            BuildHierarchy(targetRoot, contentPanel);
         }
     }
 }
