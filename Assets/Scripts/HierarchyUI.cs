@@ -14,31 +14,43 @@ public class HierarchyUI : MonoBehaviour
         Instance = this;
     }
 
-    public Transform targetRoot; // 要显示的根物体
-    public GameObject itemPrefab; // 每个层级项的预制体
-    public RectTransform contentPanel; // ScrollView的内容区域
+    public Transform targetRoot;
+    public GameObject itemPrefab; 
+    public RectTransform contentPanel; 
     public Color highlightColor = Color.red;
     public Sprite expandSprite;
     public Sprite collapseSprite;
 
-
+    public Button mergeButton;
 
     void Start()
     {
         BuildHierarchy(targetRoot, contentPanel);
+        
+        mergeButton.onClick.AddListener(() =>
+        {
+            if (targetRoot.childCount > 1)
+            {
+                GameObject mergedObject = new GameObject("MergedObject");
+                mergedObject.transform.SetParent(targetRoot);
+                foreach (Transform child in targetRoot)
+                {
+                    if (child.gameObject.layer != LayerMask.NameToLayer("NoShow"))
+                    {
+                        child.SetParent(mergedObject.transform);
+                    }
+                }
+            }
+        });
     }
 
     void Update()
     {
-        // foreach (var x in uiItems.Values)
-        // {
-        //     Destroy(x);
-        // }
-        // uiItems.Clear();
-        // BuildHierarchy(targetRoot, contentPanel);
+        
     }
 
     private Dictionary<GameObject, GameObject> uiItems = new Dictionary<GameObject, GameObject>();
+    private List<HierarchyItem> selectedItems = new List<HierarchyItem>();
     void BuildHierarchy(Transform root, Transform uiParent)
     {
         if (root.gameObject.layer == LayerMask.NameToLayer("NoShow")) return;
@@ -48,7 +60,18 @@ public class HierarchyUI : MonoBehaviour
 
         HierarchyItem itemScript = uiItem.transform.GetChild(0).GetComponent<HierarchyItem>();
         itemScript.expandButton.onClick.AddListener(() => itemScript.showChildren = !itemScript.showChildren);
-        itemScript.button.onClick.AddListener(() => HighlightObject(root.gameObject));
+        itemScript.button.onClick.AddListener(() =>
+        {
+            if (selectedItems.Contains(itemScript))
+            {
+                selectedItems.Remove(itemScript);
+            }
+            else
+            {
+                selectedItems.Add(itemScript);
+            }
+            HighlightObject(root.gameObject);
+        });
         itemScript.text.text = root.name;
         
         root.GetComponentsInChildren<Transform>(true).Where(x => x.gameObject != root.gameObject).ToList().ForEach(x =>
