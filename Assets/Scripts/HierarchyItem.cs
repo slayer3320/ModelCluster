@@ -10,7 +10,7 @@ public class HierarchyItem : MonoBehaviour
     public RectTransform rectTransform;
 
     public Button expandButton;
-    public Button button;
+    public Toggle toggle;
     public Text text;
     public Transform verticalLayoutGroup;
 
@@ -20,7 +20,19 @@ public class HierarchyItem : MonoBehaviour
 
     void Awake()
     {
-
+        toggle.onValueChanged.AddListener(isOn =>
+        {
+            if (isOn)
+            {
+                //修改normal color为灰色
+                toggle.GetComponent<Image>().color = new Color(0.5f, 0.5f, 0.5f, 1);
+            }
+            else
+            {
+                //修改normal color为白色
+                toggle.GetComponent<Image>().color = new Color(1, 1, 1, 1);
+            }
+        });
     }
 
     void Update()

@@ -27,21 +27,7 @@ public class HierarchyUI : MonoBehaviour
     {
         BuildHierarchy(targetRoot, contentPanel);
         
-        mergeButton.onClick.AddListener(() =>
-        {
-            if (targetRoot.childCount > 1)
-            {
-                GameObject mergedObject = new GameObject("MergedObject");
-                mergedObject.transform.SetParent(targetRoot);
-                foreach (Transform child in targetRoot)
-                {
-                    if (child.gameObject.layer != LayerMask.NameToLayer("NoShow"))
-                    {
-                        child.SetParent(mergedObject.transform);
-                    }
-                }
-            }
-        });
+        mergeButton.onClick.AddListener(MergeSelectedObjects);
     }
 
     void Update()
@@ -60,34 +46,78 @@ public class HierarchyUI : MonoBehaviour
 
         HierarchyItem itemScript = uiItem.transform.GetChild(0).GetComponent<HierarchyItem>();
         itemScript.expandButton.onClick.AddListener(() => itemScript.showChildren = !itemScript.showChildren);
-        itemScript.button.onClick.AddListener(() =>
+        itemScript.toggle.onValueChanged.AddListener(isOn =>
         {
-            if (selectedItems.Contains(itemScript))
+            if (isOn)
             {
-                selectedItems.Remove(itemScript);
+                selectedItems.Add(itemScript);
+                HighlightObject(root.gameObject);
             }
             else
             {
-                selectedItems.Add(itemScript);
+                selectedItems.Remove(itemScript);
+                UnHighlightObject(root.gameObject);
             }
-            HighlightObject(root.gameObject);
         });
         itemScript.text.text = root.name;
         
-        root.GetComponentsInChildren<Transform>(true).Where(x => x.gameObject != root.gameObject).ToList().ForEach(x =>
+        foreach (Transform child in root)
         {
-            BuildHierarchy(x, itemScript.verticalLayoutGroup);
-        });
+            BuildHierarchy(child, itemScript.verticalLayoutGroup);
+        }
+        
+        // root.GetComponentsInChildren<Transform>(true).Where(x => x.gameObject != root.gameObject).ToList().ForEach(x =>
+        // {
+        //     BuildHierarchy(x, itemScript.verticalLayoutGroup);
+        // });
     }
 
-    private Outline outline;
+    void ReBuildHierarchy()
+    {
+        uiItems.Clear();
+        selectedItems.Clear();
+        
+        foreach (Transform child in contentPanel)
+        {
+            Destroy(child.gameObject);
+        }
+        
+        BuildHierarchy(targetRoot, contentPanel);
+    }
+
     public void HighlightObject(GameObject obj)
     {
-        if(outline != null) Destroy(outline);
-        outline = obj.gameObject.GetComponent<Outline>() ?? obj.gameObject.AddComponent<Outline>();
+        Outline outline = obj.gameObject.AddComponent<Outline>();
         outline.OutlineColor = highlightColor;
         outline.OutlineWidth = 1.68f;
         outline.OutlineMode = Outline.Mode.OutlineAndSilhouette;
+    }
+    
+    public void UnHighlightObject(GameObject obj)
+    {
+        Destroy(obj.gameObject.GetComponent<Outline>());
+    }
+    
+    public void MergeSelectedObjects()
+    {
+        if (selectedItems.Count > 1)
+        {
+            GameObject mergedObject = new GameObject("MergedObject");
+            mergedObject.transform.SetParent(targetRoot);
+            foreach (var item in selectedItems)
+            {
+                GameObject obj = uiItems.FirstOrDefault(x => x.Value == item.gameObject.transform.parent.gameObject).Key;
+                if (obj != null && obj.layer != LayerMask.NameToLayer("NoShow"))
+                {
+                    obj.transform.SetParent(mergedObject.transform);
+                }
+                
+                UnHighlightObject(obj);
+            }
+            selectedItems.Clear();
+        }
+        
+        ReBuildHierarchy();
     }
 
 }
