@@ -22,12 +22,36 @@ public class HierarchyUI : MonoBehaviour
     public Sprite collapseSprite;
 
     public Button mergeButton;
+    public Button exportButton;
 
     void Start()
     {
-        BuildHierarchy(targetRoot, contentPanel);
+         BuildHierarchy(targetRoot, contentPanel);
         
         mergeButton.onClick.AddListener(MergeSelectedObjects);
+        //exportButton.onClick.AddListener(ObjExporter.ExportObj());
+    }
+    
+    public void MergeSelectedObjects()
+    {
+        if (selectedItems.Count > 1)
+        {
+            GameObject mergedObject = new GameObject("MergedObject");
+            mergedObject.transform.SetParent(targetRoot);
+            foreach (var item in selectedItems)
+            {
+                GameObject obj = uiItems.FirstOrDefault(x => x.Value == item.gameObject.transform.parent.gameObject).Key;
+                if (obj != null && obj.layer != LayerMask.NameToLayer("NoShow"))
+                {
+                    obj.transform.SetParent(mergedObject.transform);
+                }
+                
+                UnHighlightObject(obj);
+            }
+            selectedItems.Clear();
+        }
+        
+        ReBuildHierarchy();
     }
 
     void Update()
@@ -98,26 +122,6 @@ public class HierarchyUI : MonoBehaviour
         Destroy(obj.gameObject.GetComponent<Outline>());
     }
     
-    public void MergeSelectedObjects()
-    {
-        if (selectedItems.Count > 1)
-        {
-            GameObject mergedObject = new GameObject("MergedObject");
-            mergedObject.transform.SetParent(targetRoot);
-            foreach (var item in selectedItems)
-            {
-                GameObject obj = uiItems.FirstOrDefault(x => x.Value == item.gameObject.transform.parent.gameObject).Key;
-                if (obj != null && obj.layer != LayerMask.NameToLayer("NoShow"))
-                {
-                    obj.transform.SetParent(mergedObject.transform);
-                }
-                
-                UnHighlightObject(obj);
-            }
-            selectedItems.Clear();
-        }
-        
-        ReBuildHierarchy();
-    }
+
 
 }
