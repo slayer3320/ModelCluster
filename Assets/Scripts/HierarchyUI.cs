@@ -63,7 +63,7 @@ public class HierarchyUI : MonoBehaviour
     private List<HierarchyItem> selectedItems = new List<HierarchyItem>();
     void BuildHierarchy(Transform root, Transform uiParent)
     {
-        if (root.gameObject.layer == LayerMask.NameToLayer("NoShow")) return;
+        //if (root.gameObject.layer == LayerMask.NameToLayer("NoShow")) return;
 
         var uiItem = Instantiate(itemPrefab, uiParent);
         uiItems.Add(root.gameObject, uiItem);
@@ -109,17 +109,14 @@ public class HierarchyUI : MonoBehaviour
         BuildHierarchy(targetRoot, contentPanel);
     }
 
-    public void HighlightObject(GameObject obj)
+    private void HighlightObject(GameObject obj)
     {
-        Outline outline = obj.gameObject.AddComponent<Outline>();
-        outline.OutlineColor = highlightColor;
-        outline.OutlineWidth = 1.68f;
-        outline.OutlineMode = Outline.Mode.OutlineAndSilhouette;
+        obj.layer = LayerMask.NameToLayer("Outline");
     }
-    
-    public void UnHighlightObject(GameObject obj)
+
+    private void UnHighlightObject(GameObject obj)
     {
-        Destroy(obj.gameObject.GetComponent<Outline>());
+        obj.layer = LayerMask.NameToLayer("Default");
     }
     
 

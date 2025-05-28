@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class CameraControl : MonoBehaviour
 {
@@ -12,24 +13,43 @@ public class CameraControl : MonoBehaviour
 
     private float currentX = 0f;
     private float currentY = 30f;
-    private float panX = 0f;
-    private float panY = 0f;
     public Vector3 lookAtPoint = Vector3.zero;
+    public GameObject target;
+    
+    void Start()
+    {
+        lookAtPoint = CalculateModelCenter(target);
+    }
+    
+    Vector3 CalculateModelCenter(GameObject root)
+    {
+        Renderer[] renderers = root.GetComponentsInChildren<Renderer>();
 
+        if (renderers.Length == 0)
+        {
+            Debug.LogWarning("No renderers found in the hierarchy.");
+            return root.transform.position;
+        }
+
+        Bounds bounds = renderers[0].bounds;
+
+        foreach (Renderer renderer in renderers)
+        {
+            bounds.Encapsulate(renderer.bounds);
+        }
+
+        return bounds.center;
+    }
+    
     void Update()
     {
-        if (Input.GetMouseButton(2))
-        {
-            panX = Input.GetAxis("Mouse X") * panSpeed;
-            panY = Input.GetAxis("Mouse Y") * panSpeed;
-            lookAtPoint = lookAtPoint + new Vector3(panX, panY, 0);
-        }
+        if (EventSystem.current.IsPointerOverGameObject()) return;
 
         if (Input.GetMouseButton(0))
         {
             currentX += Input.GetAxis("Mouse X") * rotationSpeed;
             currentY -= Input.GetAxis("Mouse Y") * rotationSpeed;
-            currentY = Mathf.Clamp(currentY, 5f, 85f);
+            currentY = Mathf.Clamp(currentY, -85f, 85f);
         }
 
         float scroll = Input.mouseScrollDelta.y;
@@ -41,8 +61,8 @@ public class CameraControl : MonoBehaviour
 
         Vector3 dir = new Vector3(0, 0, -distance);
         Quaternion rotation = Quaternion.Euler(currentY, currentX, 0);
-        transform.position = rotation * dir;
-        
+        transform.position = rotation * dir + lookAtPoint;
+
         transform.LookAt(lookAtPoint);
     }
 }

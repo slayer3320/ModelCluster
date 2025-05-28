@@ -24,8 +24,14 @@ public class Main : MonoBehaviour
     {
         foreach (Transform child in parent)
         {
+            ProcessGameObject(child.gameObject);
             list.Add(child.gameObject);
             GetChildrenRecursive(child, list);
         }
+    }
+    
+    void ProcessGameObject(GameObject obj)
+    {
+        obj.name = obj.name.Split('_')[0];
     }
 }
