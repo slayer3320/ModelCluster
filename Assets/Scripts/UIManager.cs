@@ -10,16 +10,19 @@ public class UIManager : MonoBehaviour
     public ModelController ModelController;
     // 引用相机控制脚本
     public CameraController CameraController;
+
     // 滑动条
     public Slider rotateSlider;
     public Slider zoomSlider;
     public Slider cameraSlider;
 
     //子窗口
-    public GameObject HelpPanel;
-    public GameObject TextView;
-    public GameObject FileOperation;
-    public GameObject ViewControl;
+    public GameObject HelpPanel; //帮助
+    public GameObject TextView; // 文本查看
+    public GameObject FileOperation; // 文件操作
+    public GameObject ViewControl; // 视角控制
+    public GameObject FreeCameraHelp; // 自由视角提示
+
 
     // 模型对象
     public Transform modelRoot;
@@ -43,6 +46,7 @@ public class UIManager : MonoBehaviour
     public void ShowHelpPanel()
     {
         HelpPanel.SetActive(true);
+        HideFreeCameraHelp();
     }
     public void HideHelpPanel()
     {
@@ -81,5 +85,17 @@ public class UIManager : MonoBehaviour
     {
         TextView.SetActive(false);
     }
+    //自由视角提示
+    public void ShowFreeCameraHelp()
+    {
+        FreeCameraHelp.SetActive(true);
+        HideHelpPanel();
+    }
+    public void HideFreeCameraHelp()
+    {
+        FreeCameraHelp.SetActive(false);
+    }
+
+
 
 }

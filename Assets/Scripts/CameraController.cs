@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class CameraController : MonoBehaviour
 {
+    public UIManager UIManager;
     public float moveSpeed = 300f;            // 摄像机移动速度（WASD）
     public float mouseSensitivity = 2f;       // 鼠标灵敏度
     public float minVerticalAngle = -80f;     // 最小垂直角度
@@ -12,7 +13,8 @@ public class CameraController : MonoBehaviour
     private float currentVerticalAngle = 0f;     // 当前绕X轴的旋转（上下）
     private float currentHorizontalAngle = 0f;   // 当前绕Y轴的旋转（左右）
 
-    private bool isMouseLocked = true;          // 鼠标是否锁定
+    private bool isMouseLocked = false;          // 鼠标是否锁定
+    private bool isFreeViewMode = false;
 
     void Start()
     {
@@ -20,33 +22,35 @@ public class CameraController : MonoBehaviour
         currentVerticalAngle = angles.x;
         currentHorizontalAngle = angles.y;
 
-        LockCursor(true); // 启动时锁定鼠标
+        LockCursor(false); // 启动时不锁定鼠标
     }
 
     void Update()
     {
-        // 按下 Esc 解锁鼠标以操作 UI
-        if (Input.GetKeyDown(KeyCode.Escape))
+        if (isFreeViewMode && Input.GetKeyDown(KeyCode.Escape))
         {
-            LockCursor(false);
+            ExitFreeViewMode();
         }
 
-        // 鼠标右键点击重新进入视角控制模式
-        if (Input.GetMouseButtonDown(1))
-        {
-            LockCursor(true);
-        }
-
-        // 只有在鼠标锁定状态下才旋转视角
-        if (isMouseLocked)
+        if (isFreeViewMode)
         {
             HandleRotation();
         }
-
         // 始终允许移动
         HandleMovement();
     }
+    public void EnterFreeViewMode()
+    {
+        isFreeViewMode = true;
+        LockCursor(true);
+    }
 
+    public void ExitFreeViewMode()
+    {
+        isFreeViewMode = false;
+        LockCursor(false);
+        UIManager.HideFreeCameraHelp();
+    }
     void HandleRotation()
     {
         float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity;

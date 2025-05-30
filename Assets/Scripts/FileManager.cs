@@ -16,7 +16,8 @@ using SFB;
 using TMPro;
 using UnityEngine.Networking;
 using System;
-using Dummiesman; //Load OBJ Model
+using Dummiesman;
+using Unity.VisualScripting; //Load OBJ Model
 
 public class FileManager : MonoBehaviour
 {
@@ -60,7 +61,7 @@ public class FileManager : MonoBehaviour
 
             // 对新模型应用特定的缩放（如果需要）
             model.transform.localScale = new Vector3(-1, 1, 1); // set the position of parent model. Reverse X to show properly 
-
+            AssignDefaultMaterial(model);
             FitOnScreen();
             DoublicateFaces();
         }
@@ -158,17 +159,54 @@ public class FileManager : MonoBehaviour
 
     public void LoadMeshToRoot(Mesh mesh, Transform modelRoot)
     {
+        // 清空旧模型
         foreach (Transform child in modelRoot)
         {
             Destroy(child.gameObject);
         }
 
+        // 新建物体并赋mesh和材质
         GameObject obj = new GameObject("ImportedOBJ", typeof(MeshFilter), typeof(MeshRenderer));
         obj.transform.SetParent(modelRoot, false);
         obj.GetComponent<MeshFilter>().mesh = mesh;
-        obj.GetComponent<MeshRenderer>().material = new Material(Shader.Find("Standard"));
+
+        Shader urpShader = Shader.Find("Universal Render Pipeline/Lit");
+        Debug.Log($"urpShader: {urpShader}");
+        if (urpShader == null)
+        {
+            Debug.LogError("URP Shader not found!");
+            return;
+        }
+
+        Material baseMat = new Material(urpShader);
+        baseMat.color = Color.white;
+
+        // 直接赋给唯一MeshRenderer
+        obj.GetComponent<MeshRenderer>().material = baseMat;
+
         obj.transform.localPosition = Vector3.zero;
         obj.transform.localRotation = Quaternion.identity;
         obj.transform.localScale = Vector3.one;
     }
+
+
+    private void AssignDefaultMaterial(GameObject modelRoot)
+    {
+        Shader urpShader = Shader.Find("Universal Render Pipeline/Lit");
+        if (urpShader == null)
+        {
+            Debug.LogError("URP Shader not found!");
+            return;
+        }
+
+        Material defaultMat = new Material(urpShader);
+        defaultMat.color = Color.gray; // 可以改为其他颜色
+
+        foreach (var renderer in modelRoot.GetComponentsInChildren<Renderer>())
+        {
+            renderer.material = defaultMat;  // 强制替换材质
+        }
+
+    }
+
 }
