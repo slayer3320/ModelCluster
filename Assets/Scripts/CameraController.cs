@@ -23,6 +23,13 @@ public class CameraController : MonoBehaviour
         currentHorizontalAngle = angles.y;
 
         LockCursor(false); // 启动时不锁定鼠标
+
+
+        // 设置纯色背景
+        Camera.main.backgroundColor = new Color(0.7f, 0.7f, 0.7f); // 浅灰色
+        Camera.main.clearFlags = CameraClearFlags.SolidColor;
+
+
     }
 
     void Update()
