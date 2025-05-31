@@ -74,19 +74,20 @@ public class FileManager : MonoBehaviour
 
         foreach (var renderer in modelRoot.GetComponentsInChildren<Renderer>())
         {
-            Material oldMat = renderer.material;
-            Material newMat = new Material(urpShader);
-
-            if (oldMat.HasProperty("_MainTex"))
+            foreach (var oldMat in renderer.materials)
             {
-                newMat.SetTexture("_BaseMap", oldMat.mainTexture);
-            }
-            if (oldMat.HasProperty("_Color"))
-            {
-                newMat.SetColor("_BaseColor", oldMat.color);
-            }
+                Material newMat = new Material(urpShader);
 
-            renderer.material = newMat;
+                if (oldMat.HasProperty("_MainTex"))
+                    newMat.SetTexture("_BaseMap", oldMat.mainTexture);
+                if (oldMat.HasProperty("_Color"))
+                    newMat.SetColor("_BaseColor", oldMat.color);
+
+                // 关闭剔除，双面渲染
+                newMat.SetInt("_Cull", (int)UnityEngine.Rendering.CullMode.Off);
+
+                renderer.material = newMat;
+            }
         }
     }
 
