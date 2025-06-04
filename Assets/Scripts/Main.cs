@@ -16,7 +16,7 @@ public class Main : MonoBehaviour
         //OBJExporter.ExportGameObjectsToOBJ(GetAllChildrenObjects(this.gameObject), @"C:\Users\andy2\Desktop\exportedObject.obj");
     }
 
-    GameObject[] GetAllChildrenObjects(GameObject parent)
+    public GameObject[] GetAllChildrenObjects(GameObject parent)
     {
         List<GameObject> allChildren = new List<GameObject>();
         GetChildrenRecursive(parent.transform, allChildren);
