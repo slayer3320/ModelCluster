@@ -5,6 +5,8 @@ using UnityEngine.Rendering.Universal;
 using UnityEditor;
 using System.Collections.Generic;
 using System.Linq;
+using Dummiesman;
+using SFB;
 
 public class HierarchyUI : MonoBehaviour
 {
@@ -22,6 +24,7 @@ public class HierarchyUI : MonoBehaviour
     public Sprite collapseSprite;
 
     public Button mergeButton;
+    public Button importButton;
     public Button exportButton;
 
     void Start()
@@ -30,6 +33,21 @@ public class HierarchyUI : MonoBehaviour
         
         mergeButton.onClick.AddListener(MergeSelectedObjects);
         //exportButton.onClick.AddListener(ObjExporter.ExportObj());
+        importButton.onClick.AddListener(() =>
+        {
+            string[] objPath = StandaloneFileBrowser.OpenFilePanel("Open File", Application.dataPath, "obj", false);
+            if(objPath.Length == 0) return;
+            
+            Destroy(Main.current.gameObject);
+            
+            GameObject obj = new OBJLoader().Load(objPath[0]);
+            obj.transform.position = Vector3.zero;
+            obj.AddComponent<Main>();
+
+            targetRoot = obj.transform;
+            CameraControl.instance.ChangeTarget(obj);
+            ReBuildHierarchy();
+        });
     }
     
     public void MergeSelectedObjects()

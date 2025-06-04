@@ -3,6 +3,8 @@ using UnityEngine.EventSystems;
 
 public class CameraControl : MonoBehaviour
 {
+    public static CameraControl instance;
+    
     [Header("Camera Settings")]
     public float rotationSpeed = 5f;
     public float panSpeed = 5f;
@@ -15,10 +17,21 @@ public class CameraControl : MonoBehaviour
     private float currentY = 30f;
     public Vector3 lookAtPoint = Vector3.zero;
     public GameObject target;
+
+    void Awake()
+    {
+        instance = this;
+    }
     
     void Start()
     {
         lookAtPoint = CalculateModelCenter(target);
+    }
+
+    public void ChangeTarget(GameObject target)
+    {
+        this.target = target;
+        CalculateModelCenter(target);
     }
     
     Vector3 CalculateModelCenter(GameObject root)
