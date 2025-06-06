@@ -23,7 +23,7 @@ namespace Dummiesman
 
             // 创建加载器并加载
             var loader = new OBJLoader();
-            return loader.Load(objPath, mtlPath); // ✅ 使用绝对路径加载
+            return loader.Load(objPath, mtlPath); // 使用绝对路径加载
         }
     }
 }

@@ -14,6 +14,10 @@ public class FileManager : MonoBehaviour
 
     private GameObject model;
 
+    private Coroutine loadingAnimation;
+    public RectTransform loadingBlock; // 小方块（滑块）
+    public float blockSpeed = 200f;    // 滑块移动速度
+    private bool isLoading = false;
     public void OnClickOpen()
     {
         string[] paths = SFB.StandaloneFileBrowser.OpenFilePanel("Open OBJ File", "", "obj", false);
@@ -25,42 +29,83 @@ public class FileManager : MonoBehaviour
 
     private IEnumerator LoadOBJWithProgress(string filePath)
     {
-        // 显示加载UI
+        // 启动加载状态
+        isLoading = true;
+
+        // 显示加载UI并重置进度
         loadingPanel.SetActive(true);
         progressSlider.value = 0;
 
-        // 模拟加载时间（按文件大小估算）
-        long fileSizeInBytes = new System.IO.FileInfo(filePath).Length;
-        float estimatedDuration = Mathf.Clamp(fileSizeInBytes / (2048f * 1024f), 1f, 1f); // 固定为1秒
+        // 启动滑块动画协程
+        loadingAnimation = StartCoroutine(LoadingAnimation());
 
-        float timer = 0f;
-        while (timer < estimatedDuration)
-        {
-            timer += Time.deltaTime;
-            progressSlider.value = Mathf.Clamp01(timer / estimatedDuration) * 100f;
-            yield return null;
-        }
+        // 模拟加载时间（可替换为真实解析加载）
+        long fileSizeInBytes = new System.IO.FileInfo(filePath).Length;
+        float estimatedDuration = Mathf.Clamp(fileSizeInBytes / (2048f * 1024f), 1f, 1.5f); // 1~1.5秒之间
+
+        yield return new WaitForSeconds(estimatedDuration);
 
         // 清理旧模型
         if (model != null)
-        {
             Destroy(model);
-        }
         foreach (Transform child in modelRoot)
-        {
             Destroy(child.gameObject);
-        }
 
-        // 加载带材质的模型
+        // 加载新模型
         model = new OBJLoaderWithMaterials().Load(filePath);
         model.transform.SetParent(modelRoot, false);
 
-        // 转换为URP材质
+        // 转URP材质
         ConvertToURPMaterial(model);
 
-        // 收尾工作
+        // 停止动画和状态
+        isLoading = false;
+        if (loadingAnimation != null)
+            StopCoroutine(loadingAnimation);
+
+        // 隐藏加载面板
         loadingPanel.SetActive(false);
+
+        // 自动视角调整
         FitOnScreen();
+    }
+    private IEnumerator LoadingAnimation()
+    {
+        // 滑块在进度条上的左右摆动动画
+        loadingBlock.anchoredPosition = new Vector2(0, loadingBlock.anchoredPosition.y);
+
+        float sliderWidth = progressSlider.GetComponent<RectTransform>().rect.width - 100;
+        float leftBound = -sliderWidth / 2f;
+        float rightBound = sliderWidth / 2f;
+
+        bool movingRight = true;
+
+        while (isLoading)
+        {
+            float currentX = loadingBlock.anchoredPosition.x;
+
+            if (movingRight)
+            {
+                currentX += blockSpeed * Time.deltaTime;
+                if (currentX >= rightBound)
+                {
+                    currentX = rightBound;
+                    movingRight = false;
+                }
+            }
+            else
+            {
+                currentX -= blockSpeed * Time.deltaTime;
+                if (currentX <= leftBound)
+                {
+                    currentX = leftBound;
+                    movingRight = true;
+                }
+            }
+
+            loadingBlock.anchoredPosition = new Vector2(currentX, loadingBlock.anchoredPosition.y);
+            yield return null;
+        }
     }
 
     private void ConvertToURPMaterial(GameObject modelRoot)
@@ -82,6 +127,11 @@ public class FileManager : MonoBehaviour
                     newMat.SetTexture("_BaseMap", oldMat.mainTexture);
                 if (oldMat.HasProperty("_Color"))
                     newMat.SetColor("_BaseColor", oldMat.color);
+                if (oldMat.HasProperty("_BumpMap"))
+                    newMat.SetTexture("_BumpMap", oldMat.GetTexture("_BumpMap"));
+                if (oldMat.HasProperty("_EmissionMap"))
+                    newMat.SetTexture("_EmissionMap", oldMat.GetTexture("_EmissionMap"));
+
 
                 // 关闭剔除，双面渲染
                 newMat.SetInt("_Cull", (int)UnityEngine.Rendering.CullMode.Off);
