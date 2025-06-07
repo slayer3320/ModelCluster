@@ -82,7 +82,7 @@ public class HierarchyUI : MonoBehaviour
         
     }
 
-    private Dictionary<GameObject, GameObject> uiItems = new Dictionary<GameObject, GameObject>();
+    public Dictionary<GameObject, GameObject> uiItems = new Dictionary<GameObject, GameObject>();
     private List<HierarchyItem> selectedItems = new List<HierarchyItem>();
     void BuildHierarchy(Transform root, Transform uiParent)
     {
@@ -97,6 +97,7 @@ public class HierarchyUI : MonoBehaviour
         {
             if (isOn)
             {
+                TransformUI.Instance.currentSelectedObject = root.gameObject;
                 selectedItems.Add(itemScript);
                 HighlightObject(root.gameObject);
             }

@@ -1,0 +1,308 @@
+<robot name="123">
+  <link name="123" />
+  <link name="Mesh1" />
+  <joint name="123_to_Mesh1" type="fixed">
+    <parent link="123" />
+    <child link="Mesh1" />
+  </joint>
+  <link name="Mesh2" />
+  <joint name="123_to_Mesh2" type="fixed">
+    <parent link="123" />
+    <child link="Mesh2" />
+  </joint>
+  <link name="Mesh3" />
+  <joint name="123_to_Mesh3" type="fixed">
+    <parent link="123" />
+    <child link="Mesh3" />
+  </joint>
+  <link name="Mesh4" />
+  <joint name="123_to_Mesh4" type="fixed">
+    <parent link="123" />
+    <child link="Mesh4" />
+  </joint>
+  <link name="Mesh5" />
+  <joint name="123_to_Mesh5" type="fixed">
+    <parent link="123" />
+    <child link="Mesh5" />
+  </joint>
+  <link name="Mesh6" />
+  <joint name="123_to_Mesh6" type="fixed">
+    <parent link="123" />
+    <child link="Mesh6" />
+  </joint>
+  <link name="Mesh7" />
+  <joint name="123_to_Mesh7" type="fixed">
+    <parent link="123" />
+    <child link="Mesh7" />
+  </joint>
+  <link name="Mesh8" />
+  <joint name="123_to_Mesh8" type="fixed">
+    <parent link="123" />
+    <child link="Mesh8" />
+  </joint>
+  <link name="Mesh9" />
+  <joint name="123_to_Mesh9" type="fixed">
+    <parent link="123" />
+    <child link="Mesh9" />
+  </joint>
+  <link name="Mesh10" />
+  <joint name="123_to_Mesh10" type="fixed">
+    <parent link="123" />
+    <child link="Mesh10" />
+  </joint>
+  <link name="Mesh11" />
+  <joint name="123_to_Mesh11" type="fixed">
+    <parent link="123" />
+    <child link="Mesh11" />
+  </joint>
+  <link name="Mesh12" />
+  <joint name="123_to_Mesh12" type="fixed">
+    <parent link="123" />
+    <child link="Mesh12" />
+  </joint>
+  <link name="Mesh13" />
+  <joint name="123_to_Mesh13" type="fixed">
+    <parent link="123" />
+    <child link="Mesh13" />
+  </joint>
+  <link name="Mesh14" />
+  <joint name="123_to_Mesh14" type="fixed">
+    <parent link="123" />
+    <child link="Mesh14" />
+  </joint>
+  <link name="Mesh15" />
+  <joint name="123_to_Mesh15" type="fixed">
+    <parent link="123" />
+    <child link="Mesh15" />
+  </joint>
+  <link name="Mesh16" />
+  <joint name="123_to_Mesh16" type="fixed">
+    <parent link="123" />
+    <child link="Mesh16" />
+  </joint>
+  <link name="Mesh17" />
+  <joint name="123_to_Mesh17" type="fixed">
+    <parent link="123" />
+    <child link="Mesh17" />
+  </joint>
+  <link name="Mesh18" />
+  <joint name="123_to_Mesh18" type="fixed">
+    <parent link="123" />
+    <child link="Mesh18" />
+  </joint>
+  <link name="Mesh19" />
+  <joint name="123_to_Mesh19" type="fixed">
+    <parent link="123" />
+    <child link="Mesh19" />
+  </joint>
+  <link name="Mesh20" />
+  <joint name="123_to_Mesh20" type="fixed">
+    <parent link="123" />
+    <child link="Mesh20" />
+  </joint>
+  <link name="Mesh21" />
+  <joint name="123_to_Mesh21" type="fixed">
+    <parent link="123" />
+    <child link="Mesh21" />
+  </joint>
+  <link name="Mesh22" />
+  <joint name="123_to_Mesh22" type="fixed">
+    <parent link="123" />
+    <child link="Mesh22" />
+  </joint>
+  <link name="Mesh23" />
+  <joint name="123_to_Mesh23" type="fixed">
+    <parent link="123" />
+    <child link="Mesh23" />
+  </joint>
+  <link name="Mesh24" />
+  <joint name="123_to_Mesh24" type="fixed">
+    <parent link="123" />
+    <child link="Mesh24" />
+  </joint>
+  <link name="Mesh25" />
+  <joint name="123_to_Mesh25" type="fixed">
+    <parent link="123" />
+    <child link="Mesh25" />
+  </joint>
+  <link name="Mesh26" />
+  <joint name="123_to_Mesh26" type="fixed">
+    <parent link="123" />
+    <child link="Mesh26" />
+  </joint>
+  <link name="Mesh27" />
+  <joint name="123_to_Mesh27" type="fixed">
+    <parent link="123" />
+    <child link="Mesh27" />
+  </joint>
+  <link name="Mesh28" />
+  <joint name="123_to_Mesh28" type="fixed">
+    <parent link="123" />
+    <child link="Mesh28" />
+  </joint>
+  <link name="Mesh29" />
+  <joint name="123_to_Mesh29" type="fixed">
+    <parent link="123" />
+    <child link="Mesh29" />
+  </joint>
+  <link name="Mesh30" />
+  <joint name="123_to_Mesh30" type="fixed">
+    <parent link="123" />
+    <child link="Mesh30" />
+  </joint>
+  <link name="Mesh31" />
+  <joint name="123_to_Mesh31" type="fixed">
+    <parent link="123" />
+    <child link="Mesh31" />
+  </joint>
+  <link name="Mesh32" />
+  <joint name="123_to_Mesh32" type="fixed">
+    <parent link="123" />
+    <child link="Mesh32" />
+  </joint>
+  <link name="Mesh33" />
+  <joint name="123_to_Mesh33" type="fixed">
+    <parent link="123" />
+    <child link="Mesh33" />
+  </joint>
+  <link name="Mesh34" />
+  <joint name="123_to_Mesh34" type="fixed">
+    <parent link="123" />
+    <child link="Mesh34" />
+  </joint>
+  <link name="Mesh35" />
+  <joint name="123_to_Mesh35" type="fixed">
+    <parent link="123" />
+    <child link="Mesh35" />
+  </joint>
+  <link name="Mesh36" />
+  <joint name="123_to_Mesh36" type="fixed">
+    <parent link="123" />
+    <child link="Mesh36" />
+  </joint>
+  <link name="Mesh37" />
+  <joint name="123_to_Mesh37" type="fixed">
+    <parent link="123" />
+    <child link="Mesh37" />
+  </joint>
+  <link name="Mesh38" />
+  <joint name="123_to_Mesh38" type="fixed">
+    <parent link="123" />
+    <child link="Mesh38" />
+  </joint>
+  <link name="Mesh39" />
+  <joint name="123_to_Mesh39" type="fixed">
+    <parent link="123" />
+    <child link="Mesh39" />
+  </joint>
+  <link name="Mesh40" />
+  <joint name="123_to_Mesh40" type="fixed">
+    <parent link="123" />
+    <child link="Mesh40" />
+  </joint>
+  <link name="Mesh41" />
+  <joint name="123_to_Mesh41" type="fixed">
+    <parent link="123" />
+    <child link="Mesh41" />
+  </joint>
+  <link name="Mesh42" />
+  <joint name="123_to_Mesh42" type="fixed">
+    <parent link="123" />
+    <child link="Mesh42" />
+  </joint>
+  <link name="Mesh43" />
+  <joint name="123_to_Mesh43" type="fixed">
+    <parent link="123" />
+    <child link="Mesh43" />
+  </joint>
+  <link name="Mesh44" />
+  <joint name="123_to_Mesh44" type="fixed">
+    <parent link="123" />
+    <child link="Mesh44" />
+  </joint>
+  <link name="Mesh45" />
+  <joint name="123_to_Mesh45" type="fixed">
+    <parent link="123" />
+    <child link="Mesh45" />
+  </joint>
+  <link name="Mesh46" />
+  <joint name="123_to_Mesh46" type="fixed">
+    <parent link="123" />
+    <child link="Mesh46" />
+  </joint>
+  <link name="Mesh47" />
+  <joint name="123_to_Mesh47" type="fixed">
+    <parent link="123" />
+    <child link="Mesh47" />
+  </joint>
+  <link name="Mesh48" />
+  <joint name="123_to_Mesh48" type="fixed">
+    <parent link="123" />
+    <child link="Mesh48" />
+  </joint>
+  <link name="Mesh49" />
+  <joint name="123_to_Mesh49" type="fixed">
+    <parent link="123" />
+    <child link="Mesh49" />
+  </joint>
+  <link name="Mesh50" />
+  <joint name="123_to_Mesh50" type="fixed">
+    <parent link="123" />
+    <child link="Mesh50" />
+  </joint>
+  <link name="Mesh51" />
+  <joint name="123_to_Mesh51" type="fixed">
+    <parent link="123" />
+    <child link="Mesh51" />
+  </joint>
+  <link name="Mesh52" />
+  <joint name="123_to_Mesh52" type="fixed">
+    <parent link="123" />
+    <child link="Mesh52" />
+  </joint>
+  <link name="Mesh53" />
+  <joint name="123_to_Mesh53" type="fixed">
+    <parent link="123" />
+    <child link="Mesh53" />
+  </joint>
+  <link name="Mesh54" />
+  <joint name="123_to_Mesh54" type="fixed">
+    <parent link="123" />
+    <child link="Mesh54" />
+  </joint>
+  <link name="Mesh55" />
+  <joint name="123_to_Mesh55" type="fixed">
+    <parent link="123" />
+    <child link="Mesh55" />
+  </joint>
+  <link name="Mesh56" />
+  <joint name="123_to_Mesh56" type="fixed">
+    <parent link="123" />
+    <child link="Mesh56" />
+  </joint>
+  <link name="GameObject" />
+  <joint name="123_to_GameObject" type="fixed">
+    <parent link="123" />
+    <child link="GameObject" />
+  </joint>
+  <link name="Mesh57" />
+  <joint name="GameObject_to_Mesh57" type="fixed">
+    <parent link="GameObject" />
+    <child link="Mesh57" />
+  </joint>
+  <link name="Mesh58" />
+  <joint name="GameObject_to_Mesh58" type="fixed">
+    <parent link="GameObject" />
+    <child link="Mesh58" />
+  </joint>
+  <link name="Mesh59" />
+  <joint name="GameObject_to_Mesh59" type="fixed">
+    <parent link="GameObject" />
+    <child link="Mesh59" />
+  </joint>
+  <link name="Mesh60" />
+  <joint name="GameObject_to_Mesh60" type="fixed">
+    <parent link="GameObject" />
+    <child link="Mesh60" />
+  </joint>
+</robot>

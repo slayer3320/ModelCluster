@@ -54,9 +54,12 @@ public class CameraControl : MonoBehaviour
         return bounds.center;
     }
     
+    public bool isControlling = true;
+    
     void Update()
     {
         if (EventSystem.current.IsPointerOverGameObject()) return;
+        if (!isControlling) return;
 
         if (Input.GetMouseButton(0))
         {
