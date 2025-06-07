@@ -24,6 +24,7 @@ public class HierarchyUI : MonoBehaviour
     public Sprite collapseSprite;
 
     public Button mergeButton;
+    public Button submergeButton;
     public Button importButton;
     public Button exportButton;
 
@@ -32,6 +33,7 @@ public class HierarchyUI : MonoBehaviour
          BuildHierarchy(targetRoot, contentPanel);
         
         mergeButton.onClick.AddListener(MergeSelectedObjects);
+        submergeButton.onClick.AddListener(SubmergeSelectedObjects);
         exportButton.onClick.AddListener(() =>
         {
             string objPath = StandaloneFileBrowser.SaveFilePanel("Save File", Application.dataPath, targetRoot.name, "obj");
@@ -72,6 +74,38 @@ public class HierarchyUI : MonoBehaviour
                 
                 UnHighlightObject(obj);
             }
+            selectedItems.Clear();
+        }
+        
+        ReBuildHierarchy();
+    }
+    
+    public void SubmergeSelectedObjects()
+    {
+        if (selectedItems.Count > 0)
+        {
+            GameObject obj = uiItems.FirstOrDefault(x => x.Value == selectedItems[^1].gameObject.transform.parent.gameObject).Key;
+            if(obj.GetComponent<MeshFilter>() != null)
+            {
+                return;
+            }   
+            if (obj != null && obj.layer != LayerMask.NameToLayer("NoShow"))
+            {
+                Transform parent = obj.transform.parent;
+                if (parent == null) return;
+                List<Transform> children = new List<Transform>();
+                foreach (Transform child in obj.transform)
+                {
+                    Debug.Log(child.gameObject.name);
+                    UnHighlightObject(child.gameObject);
+                    children.Add(child);
+                }
+                
+                children.ForEach(x => x.gameObject.transform.SetParent(parent));
+            }
+            UnHighlightObject(obj);
+            
+            DestroyImmediate(obj);
             selectedItems.Clear();
         }
         
