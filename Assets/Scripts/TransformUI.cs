@@ -35,8 +35,7 @@ public class TransformUI : MonoBehaviour
             texts.Add(text.name, text);
         });
         
-        Debug.Log(texts.Count);
-        Debug.Log(pressDetections.Count);
+
         
         pressDetections["XButton"].OnPressDown += () =>
         {

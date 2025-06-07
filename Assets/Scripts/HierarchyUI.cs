@@ -34,9 +34,9 @@ public class HierarchyUI : MonoBehaviour
         mergeButton.onClick.AddListener(MergeSelectedObjects);
         exportButton.onClick.AddListener(() =>
         {
-            string objPath = StandaloneFileBrowser.SaveFilePanel("Save File", Application.dataPath, "", "obj");
+            string objPath = StandaloneFileBrowser.SaveFilePanel("Save File", Application.dataPath, targetRoot.name, "obj");
             
-            RuntimeOBJExporter.instance.ExportGameObjectsToOBJ(Main.current.GetAllChildrenObjects(Main.current.gameObject), objPath);
+            RuntimeOBJExporter.instance.ExportGameObjectsToOBJ(Main.current.GetAllChildrenObjects(Main.current.gameObject),Main.current.gameObject , objPath);
         });
         importButton.onClick.AddListener(() =>
         {

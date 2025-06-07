@@ -27,19 +27,19 @@ newmtl _Silver_1
 Kd 0.615762 0.615762 0.615762
 illum 2
 
-newmtl _WhiteSmoke_
-Kd 0.9825599 0.9825599 0.9825599
-illum 2
-
-newmtl _Charcoal_1
-Kd 0.5494937 0.6710355 0.7788678
-illum 2
-
 newmtl _Charcoal_8
 Kd 0.6710355 0.6796898 0.6853806
 illum 2
 
 newmtl _DarkGray_5
 Kd 0.8205325 0.8843836 0.8553663
+illum 2
+
+newmtl _WhiteSmoke_
+Kd 0.9825599 0.9825599 0.9825599
+illum 2
+
+newmtl _Charcoal_1
+Kd 0.5494937 0.6710355 0.7788678
 illum 2
 

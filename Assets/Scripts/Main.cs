@@ -10,7 +10,7 @@ public class Main : MonoBehaviour
     {
         current = this;
         
-        ModelFlattener.Instance.FlattenHierarchy(this.gameObject);
+        //ModelFlattener.Instance.FlattenHierarchy(this.gameObject);
         
         //.GameObject[] objs = GameObject.FindObjectsOfType<GameObject>(true);
         //OBJExporter.ExportGameObjectsToOBJ(GetAllChildrenObjects(this.gameObject), @"C:\Users\andy2\Desktop\exportedObject.obj");

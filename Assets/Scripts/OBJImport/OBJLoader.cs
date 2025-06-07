@@ -16,6 +16,7 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 using System;
+using System.Linq;
 using Dummiesman;
 #if UNITY_EDITOR
 using UnityEditor;
@@ -105,6 +106,10 @@ namespace Dummiesman
             //var reader = new StringReader(inputReader.ReadToEnd());
 
             Dictionary<string, OBJObjectBuilder> builderDict = new Dictionary<string, OBJObjectBuilder>();
+            List<string> names = new List<string>();
+            List<string> parents = new List<string>();
+            Dictionary<string, string> nameToParent = new Dictionary<string, string>();
+            
             OBJObjectBuilder currentBuilder = null;
             string currentMaterial = "default";
 
@@ -125,7 +130,7 @@ namespace Dummiesman
             };
 
             //create default object
-            setCurrentObjectFunc.Invoke("default");
+            //setCurrentObjectFunc.Invoke("default");
 
 			//var buffer = new DoubleBuffer(reader, 256 * 1024);
 			var buffer = new CharWordReader(reader, 4 * 1024);
@@ -144,7 +149,30 @@ namespace Dummiesman
                 //comment or blank
                 if (buffer.Is("#"))
                 {
-					buffer.SkipUntilNewLine();
+                    buffer.SkipWhitespaces();
+                    buffer.ReadUntilNewLine();
+                    string comment = buffer.GetString();
+                    // Debug.Log(comment);
+                    if (comment.StartsWith("name:"))
+                    {
+                        string[] str = comment.Substring("name:".Length).Split(' ');
+                        names.Add(comment.Substring("name:".Length).Split(' ')[0]);
+                        if(str.Length == 1)
+                        {
+                            parents.Add("null");
+                            nameToParent.Add(comment.Substring("name:".Length).Split(' ')[0], "null");
+                        }
+                        else if (str.Length == 2)
+                        {
+                            parents.Add(str[1].Substring("parent:".Length));
+                            nameToParent.Add(comment.Substring("name:".Length).Split(' ')[0], str[1].Substring("parent:".Length));
+                        }
+                    }
+                    else
+                    {
+                        Debug.LogError($"Skipping {comment}");
+                    }
+                    
                     continue;
                 }
 				
@@ -267,16 +295,47 @@ namespace Dummiesman
             GameObject obj = new GameObject(_objInfo != null ? Path.GetFileNameWithoutExtension(_objInfo.Name) : "WavefrontObject");
             obj.transform.localScale = new Vector3(-1f, 1f, 1f);
 
+            int idx = 0;
+            Dictionary<string, GameObject> objects = new Dictionary<string, GameObject>();
             foreach (var builder in builderDict)
             {
                 //empty object
-                if (builder.Value.PushedFaceCount == 0)
-                    continue;
+                // if (builder.Value.PushedFaceCount == 0)
+                //     continue;
 
                 var builtObj = builder.Value.Build();
+                if (builder.Value.PushedFaceCount == 0)
+                {
+                    MonoHelper.DestroyImmediate(builtObj.GetComponent<MeshFilter>());
+                    MonoHelper.DestroyImmediate(builtObj.GetComponent<MeshRenderer>());
+                }
                 builtObj.transform.SetParent(obj.transform, false);
+                objects.Add(builtObj.transform.name, builtObj);
             }
-
+            
+            int parentIdx = 1;
+            foreach (var objky in objects)
+            {
+                // Debug.Log(objky.Key + " " + nameToParent[objky.Key]);
+                if(nameToParent.ContainsKey(objky.Key)) 
+                {
+                    string parentName = nameToParent[objky.Key];
+                    if (parentName != "null")
+                    {
+                        if (objects.ContainsKey(parentName))
+                        {
+                            Debug. Log($"Setting parent of {objky.Key} to {parentName}");
+                            objky.Value.transform.SetParent(objects[parentName].transform, false);
+                        }
+                        else
+                        {
+                            //GameObject parent = new GameObject("Parent " + parentIdx);
+                            Debug.LogError(parentName + " not found");
+                        }
+                    }
+                }
+            }
+            
             return obj;
         }
 

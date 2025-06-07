@@ -3,6 +3,7 @@ using System.Collections;
 using System.IO;
 using System.Text;
 using System.Collections.Generic;
+using System.Linq;
 
 public class RuntimeOBJExporter : MonoBehaviour
 {
@@ -22,7 +23,7 @@ public class RuntimeOBJExporter : MonoBehaviour
     public bool objNameAddIdNum = false;
     private string lastExportFolder;
 
-    public void ExportGameObjectsToOBJ(GameObject[] objects, string exportPath)
+    public void ExportGameObjectsToOBJ(GameObject[] objects, GameObject mainObj, string exportPath)
     {
         lastExportFolder = Path.GetDirectoryName(exportPath);
         
@@ -63,16 +64,16 @@ public class RuntimeOBJExporter : MonoBehaviour
         {
             if (mf == null || mf.sharedMesh == null) continue;
 
-            string meshName = mf.gameObject.name;
-            if (splitObjects)
+            if (mf.gameObject.transform.parent != null)
             {
-                string exportName = meshName;
-                if (objNameAddIdNum)
-                {
-                    exportName += "_" + mf.gameObject.GetInstanceID();
-                }
-                sb.AppendLine("g " + exportName);
+                sb.AppendLine($"# name:{mf.gameObject.name} parent:{mf.gameObject.transform.parent.name}");
             }
+            else
+            {
+                sb.AppendLine($"# name:{mf.gameObject.name} parent:null");
+            }
+            
+            
 
             MeshRenderer mr = mf.gameObject.GetComponent<MeshRenderer>();
             if (mr != null && generateMaterials)
@@ -136,6 +137,17 @@ public class RuntimeOBJExporter : MonoBehaviour
                 {
                     sb.AppendLine("usemtl " + mr.sharedMaterials[submesh].name);
                 }
+                
+                string meshName = mf.gameObject.name;
+                if (splitObjects)
+                {
+                    string exportName = meshName;
+                    if (objNameAddIdNum)
+                    {
+                        exportName += "_" + mf.gameObject.GetInstanceID();
+                    }
+                    sb.AppendLine("g " + exportName);
+                }
 
                 // 面处理 - 修正顶点顺序
                 for (int i = 0; i < triangles.Length; i += 3)
@@ -158,6 +170,13 @@ public class RuntimeOBJExporter : MonoBehaviour
             globalVertexIndex += msh.vertexCount;
         }
 
+        mainObj.GetComponentsInChildren<Transform>(true).ToList().ForEach(transform =>
+        {
+            if (transform == mainObj.transform || transform.GetComponent<MeshFilter>()) return;
+            sb.AppendLine("g " + transform.gameObject.name);
+            sb.AppendLine($"#name:{transform.gameObject.name} parent:{transform.gameObject.transform.parent.name}");
+        });
+        
         // 写入文件
         File.WriteAllText(exportPath, sb.ToString());
         if (generateMaterials && sbMaterials.Length > 0)
