@@ -54,12 +54,13 @@ public class HierarchyUI : MonoBehaviour
             ReBuildHierarchy();
         });
     }
-    
+
+    private int mergeIdx = 1;
     public void MergeSelectedObjects()
     {
         if (selectedItems.Count > 1)
         {
-            GameObject mergedObject = new GameObject("MergedObject");
+            GameObject mergedObject = new GameObject("MergedObject" + mergeIdx++);
             mergedObject.transform.SetParent(targetRoot);
             foreach (var item in selectedItems)
             {

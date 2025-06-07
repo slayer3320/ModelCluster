@@ -155,17 +155,17 @@ namespace Dummiesman
                     // Debug.Log(comment);
                     if (comment.StartsWith("name:"))
                     {
-                        string[] str = comment.Substring("name:".Length).Split(' ');
+                        string[] str = comment.Split(' ');
                         names.Add(comment.Substring("name:".Length).Split(' ')[0]);
                         if(str.Length == 1)
                         {
                             parents.Add("null");
-                            nameToParent.Add(comment.Substring("name:".Length).Split(' ')[0], "null");
+                            nameToParent.Add(str[0].Substring("name:".Length), "null");
                         }
                         else if (str.Length == 2)
                         {
                             parents.Add(str[1].Substring("parent:".Length));
-                            nameToParent.Add(comment.Substring("name:".Length).Split(' ')[0], str[1].Substring("parent:".Length));
+                            nameToParent.Add(str[0].Substring("name:".Length), str[1].Substring("parent:".Length));
                         }
                     }
                     else
@@ -313,10 +313,12 @@ namespace Dummiesman
                 objects.Add(builtObj.transform.name, builtObj);
             }
             
+            
+            
             int parentIdx = 1;
             foreach (var objky in objects)
             {
-                // Debug.Log(objky.Key + " " + nameToParent[objky.Key]);
+                Debug.Log(objky.Key + " " + nameToParent[objky.Key]);
                 if(nameToParent.ContainsKey(objky.Key)) 
                 {
                     string parentName = nameToParent[objky.Key];
@@ -324,13 +326,13 @@ namespace Dummiesman
                     {
                         if (objects.ContainsKey(parentName))
                         {
-                            Debug. Log($"Setting parent of {objky.Key} to {parentName}");
+                            //Debug. Log($"Setting parent of {objky.Key} to {parentName}");
                             objky.Value.transform.SetParent(objects[parentName].transform, false);
                         }
                         else
                         {
                             //GameObject parent = new GameObject("Parent " + parentIdx);
-                            Debug.LogError(parentName + " not found");
+                            //Debug.LogError(parentName + " not found");
                         }
                     }
                 }

@@ -174,7 +174,7 @@ public class RuntimeOBJExporter : MonoBehaviour
         {
             if (transform == mainObj.transform || transform.GetComponent<MeshFilter>()) return;
             sb.AppendLine("g " + transform.gameObject.name);
-            sb.AppendLine($"#name:{transform.gameObject.name} parent:{transform.gameObject.transform.parent.name}");
+            sb.AppendLine($"# name:{transform.gameObject.name} parent:{transform.gameObject.transform.parent.name}");
         });
         
         // 写入文件
