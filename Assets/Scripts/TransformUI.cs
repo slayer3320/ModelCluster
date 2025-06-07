@@ -72,7 +72,7 @@ public class TransformUI : MonoBehaviour
         
         if (isPressingX)
         {
-            Debug.Log("Pressing X");
+//            Debug.Log("Pressing X");
             
             currentSelectedObject.transform.position += 
                 new Vector3((Input.mousePosition.x - initialMousePosition.x) * sensitivity.x * Time.deltaTime, 0, 0);

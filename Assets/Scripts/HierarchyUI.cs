@@ -96,7 +96,7 @@ public class HierarchyUI : MonoBehaviour
                 List<Transform> children = new List<Transform>();
                 foreach (Transform child in obj.transform)
                 {
-                    Debug.Log(child.gameObject.name);
+                    //Debug.Log(child.gameObject.name);
                     UnHighlightObject(child.gameObject);
                     children.Add(child);
                 }

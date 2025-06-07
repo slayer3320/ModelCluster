@@ -318,7 +318,7 @@ namespace Dummiesman
             int parentIdx = 1;
             foreach (var objky in objects)
             {
-                Debug.Log(objky.Key + " " + nameToParent[objky.Key]);
+//                Debug.Log(objky.Key + " " + nameToParent[objky.Key]);
                 if(nameToParent.ContainsKey(objky.Key)) 
                 {
                     string parentName = nameToParent[objky.Key];
