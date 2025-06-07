@@ -26,11 +26,21 @@ public class HierarchyItem : MonoBehaviour
             {
                 //修改normal color为灰色
                 toggle.GetComponent<Image>().color = new Color(0.5f, 0.5f, 0.5f, 1);
+                
+                verticalLayoutGroup.GetComponentsInChildren<HierarchyItem>(true).ToList().ForEach(item =>
+                {
+                    item.toggle.isOn = true;
+                });
             }
             else
             {
                 //修改normal color为白色
                 toggle.GetComponent<Image>().color = new Color(1, 1, 1, 1);
+                
+                verticalLayoutGroup.GetComponentsInChildren<HierarchyItem>(true).ToList().ForEach(item =>
+                {
+                    item.toggle.isOn = false;
+                });
             }
         });
     }

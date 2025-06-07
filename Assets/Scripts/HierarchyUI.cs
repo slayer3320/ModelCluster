@@ -95,9 +95,10 @@ public class HierarchyUI : MonoBehaviour
         itemScript.expandButton.onClick.AddListener(() => itemScript.showChildren = !itemScript.showChildren);
         itemScript.toggle.onValueChanged.AddListener(isOn =>
         {
+            TransformUI.Instance.currentSelectedObject = root.gameObject;
+            
             if (isOn)
             {
-                TransformUI.Instance.currentSelectedObject = root.gameObject;
                 selectedItems.Add(itemScript);
                 HighlightObject(root.gameObject);
             }

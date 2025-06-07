@@ -35,7 +35,7 @@ public class TransformUI : MonoBehaviour
             texts.Add(text.name, text);
         });
         
-
+    
         
         pressDetections["XButton"].OnPressDown += () =>
         {
@@ -80,12 +80,12 @@ public class TransformUI : MonoBehaviour
         if (isPressingY)
         {
             currentSelectedObject.transform.position += 
-                new Vector3(0, (Input.mousePosition.y - initialMousePosition.y) * sensitivity.y * Time.deltaTime, 0);
+                new Vector3(0, (Input.mousePosition.x - initialMousePosition.x) * sensitivity.y * Time.deltaTime, 0);
         }
         if (isPressingZ)
         {
             currentSelectedObject.transform.position += 
-                new Vector3(0, 0, (Input.mousePosition.z - initialMousePosition.z) * sensitivity.z * Time.deltaTime);
+                new Vector3(0, 0, (Input.mousePosition.x - initialMousePosition.x) * sensitivity.z * Time.deltaTime);
         }
         
         initialMousePosition = Input.mousePosition;
@@ -97,6 +97,8 @@ public class TransformUI : MonoBehaviour
             isPressingY = false;
             isPressingZ = false;
         }
+        
+        texts["CurrentText"].text = "Current:\n" + currentSelectedObject.name;
         
         texts["XText"].text = currentSelectedObject.transform.position.x.ToString("F2");
         texts["YText"].text = currentSelectedObject.transform.position.y.ToString("F2");
