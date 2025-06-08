@@ -5,7 +5,7 @@ using UnityEngine;
 public class CameraController : MonoBehaviour
 {
     public UIManager UIManager;
-    public float moveSpeed = 300f;            // 摄像机移动速度（WASD）
+    public float moveSpeed = 100;            // 摄像机移动速度（WASD）
     public float mouseSensitivity = 2f;       // 鼠标灵敏度
     public float minVerticalAngle = -80f;     // 最小垂直角度
     public float maxVerticalAngle = 80f;      // 最大垂直角度

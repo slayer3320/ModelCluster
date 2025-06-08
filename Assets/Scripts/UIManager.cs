@@ -10,6 +10,8 @@ public class UIManager : MonoBehaviour
     public ModelController ModelController;
     // 引用相机控制脚本
     public CameraController CameraController;
+    // 引用层级管理脚本
+    // public HierarchyManager HierarchyManager;
 
     // 滑动条
     public Slider rotateSlider;
@@ -17,12 +19,26 @@ public class UIManager : MonoBehaviour
     public Slider cameraSlider;
 
     //子窗口
-    public GameObject HelpPanel; //帮助
-    public GameObject TextView; // 文本查看
-    public GameObject FileOperation; // 文件操作
-    public GameObject ViewControl; // 视角控制
-    public GameObject FreeCameraHelp; // 自由视角提示
+    public GameObject HelpPanel; //帮助(panel)
+    public GameObject HierarchyPanel; // 模型层级结构子窗(panel)
+    public GameObject TextView; // 文本查看(panel)
 
+    //按钮面板
+    public GameObject FileOperation; // 文件操作(button)
+    public GameObject ViewControl; // 视角控制(button)
+    public GameObject MergeHierarchy; //层级合并(button)
+
+    //提示
+    public GameObject FreeCameraHelp; // 自由视角提示(text)
+
+    //预制体和精灵
+    public GameObject itemPrefab;
+    public Sprite expandSprite;
+    public Sprite collapseSprite;
+
+
+    //颜色
+    public Color highlightColor = Color.red;//模型部件选中高光：红色
 
     // 模型对象
     public Transform modelRoot;
@@ -47,6 +63,7 @@ public class UIManager : MonoBehaviour
     {
         HelpPanel.SetActive(true);
         HideFreeCameraHelp();
+
     }
     public void HideHelpPanel()
     {
@@ -57,6 +74,7 @@ public class UIManager : MonoBehaviour
     {
         ViewControl.SetActive(true);
         HideFileOperation();
+        HideMergeHierarchy();
 
     }
     public void HideViewControl()
@@ -68,12 +86,24 @@ public class UIManager : MonoBehaviour
     {
         FileOperation.SetActive(true);
         HideViewControl();
+        HideMergeHierarchy();
     }
-
     public void HideFileOperation()
     {
         FileOperation.SetActive(false);
         HideTextView();
+    }
+    //层级结构窗口
+    public void ShowMergeHierarchy()
+    {
+        MergeHierarchy.SetActive(true);
+        ShowHierarchyPanel();
+        HideViewControl();
+        HideFileOperation();
+    }
+    public void HideMergeHierarchy()
+    {
+        MergeHierarchy.SetActive(false);
     }
     //文件子窗口：obj文本
     public void ShowTextView()
@@ -85,6 +115,17 @@ public class UIManager : MonoBehaviour
     {
         TextView.SetActive(false);
     }
+    //层级子窗口：模型层级选择
+    public void ShowHierarchyPanel()
+    {
+        HierarchyPanel.SetActive(true);
+
+    }
+    public void HideHierarchyPanel()
+    {
+        HierarchyPanel.SetActive(false);
+    }
+
     //自由视角提示
     public void ShowFreeCameraHelp()
     {

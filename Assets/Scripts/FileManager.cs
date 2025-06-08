@@ -8,7 +8,7 @@ public class FileManager : MonoBehaviour
 {
     public TextMeshProUGUI textMeshPro;
     public Transform modelRoot;
-
+    public ModelPreprocessor ModelPreprocessor;
     public GameObject loadingPanel;  // 进度条外层面板
     public Slider progressSlider;    // 进度条
 
@@ -66,8 +66,8 @@ public class FileManager : MonoBehaviour
         // 隐藏加载面板
         loadingPanel.SetActive(false);
 
-        // 自动视角调整
-        FitOnScreen();
+
+        ModelPreprocessor.InitImportModel();
     }
     private IEnumerator LoadingAnimation()
     {
@@ -152,15 +152,5 @@ public class FileManager : MonoBehaviour
         return bound;
     }
 
-    public void FitOnScreen()
-    {
-        if (model == null) return;
 
-        Bounds bound = GetBound(model);
-        Vector3 boundSize = bound.size;
-        float diagonal = Mathf.Sqrt(boundSize.x * boundSize.x + boundSize.y * boundSize.y + boundSize.z * boundSize.z);
-        Camera.main.orthographicSize = diagonal / 2.0f;
-        Camera.main.transform.position = bound.center + new Vector3(0, 0, -diagonal);
-        Camera.main.transform.LookAt(bound.center);
-    }
 }
