@@ -10,6 +10,10 @@ public class ModelPreprocessor : MonoBehaviour
     {
         InitImportModel();
     }
+    public void SetRootObject(GameObject newRoot)
+    {
+        rootObject = newRoot;
+    }
     public void InitImportModel()
     {
         if (rootObject == null)
@@ -88,4 +92,6 @@ public class ModelPreprocessor : MonoBehaviour
 
         return bounds;
     }
+
+
 }

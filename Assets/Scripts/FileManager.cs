@@ -67,6 +67,7 @@ public class FileManager : MonoBehaviour
         loadingPanel.SetActive(false);
 
 
+        ModelPreprocessor.SetRootObject(model);
         ModelPreprocessor.InitImportModel();
     }
     private IEnumerator LoadingAnimation()
@@ -108,39 +109,42 @@ public class FileManager : MonoBehaviour
         }
     }
 
-    private void ConvertToURPMaterial(GameObject modelRoot)
+   private void ConvertToURPMaterial(GameObject modelRoot)
+{
+    Shader urpShader = Shader.Find("Universal Render Pipeline/Lit");
+    if (urpShader == null)
     {
-        Shader urpShader = Shader.Find("Universal Render Pipeline/Lit");
-        if (urpShader == null)
-        {
-            Debug.LogError("URP Shader not found!");
-            return;
-        }
-
-        foreach (var renderer in modelRoot.GetComponentsInChildren<Renderer>())
-        {
-            foreach (var oldMat in renderer.materials)
-            {
-                Material newMat = new Material(urpShader);
-
-                if (oldMat.HasProperty("_MainTex"))
-                    newMat.SetTexture("_BaseMap", oldMat.mainTexture);
-                if (oldMat.HasProperty("_Color"))
-                    newMat.SetColor("_BaseColor", oldMat.color);
-                if (oldMat.HasProperty("_BumpMap"))
-                    newMat.SetTexture("_BumpMap", oldMat.GetTexture("_BumpMap"));
-                if (oldMat.HasProperty("_EmissionMap"))
-                    newMat.SetTexture("_EmissionMap", oldMat.GetTexture("_EmissionMap"));
-
-
-                // 关闭剔除，双面渲染
-                newMat.SetInt("_Cull", (int)UnityEngine.Rendering.CullMode.Off);
-
-                renderer.material = newMat;
-            }
-        }
+        Debug.LogError("URP Shader not found!");
+        return;
     }
 
+    foreach (var renderer in modelRoot.GetComponentsInChildren<Renderer>())
+    {
+        Material[] oldMats = renderer.materials;
+        Material[] newMats = new Material[oldMats.Length];
+
+        for (int i = 0; i < oldMats.Length; i++)
+        {
+            Material oldMat = oldMats[i];
+            Material newMat = new Material(urpShader);
+
+            if (oldMat.HasProperty("_MainTex"))
+                newMat.SetTexture("_BaseMap", oldMat.mainTexture);
+            if (oldMat.HasProperty("_Color"))
+                newMat.SetColor("_BaseColor", oldMat.color);
+            if (oldMat.HasProperty("_BumpMap"))
+                newMat.SetTexture("_BumpMap", oldMat.GetTexture("_BumpMap"));
+            if (oldMat.HasProperty("_EmissionMap"))
+                newMat.SetTexture("_EmissionMap", oldMat.GetTexture("_EmissionMap"));
+
+            // 双面显示
+            newMat.SetInt("_Cull", (int)UnityEngine.Rendering.CullMode.Off);
+            newMats[i] = newMat;
+        }
+
+        renderer.materials = newMats;
+    }
+}
     private Bounds GetBound(GameObject gameObj)
     {
         Bounds bound = new Bounds(gameObj.transform.position, Vector3.zero);
