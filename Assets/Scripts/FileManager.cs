@@ -18,6 +18,8 @@ public class FileManager : MonoBehaviour
     public RectTransform loadingBlock; // 小方块（滑块）
     public float blockSpeed = 200f;    // 滑块移动速度
     private bool isLoading = false;
+
+
     public void OnClickOpen()
     {
         string[] paths = SFB.StandaloneFileBrowser.OpenFilePanel("Open OBJ File", "", "obj", false);
@@ -58,17 +60,21 @@ public class FileManager : MonoBehaviour
         // 转URP材质
         ConvertToURPMaterial(model);
 
-        // 停止动画和状态
-        isLoading = false;
-        if (loadingAnimation != null)
-            StopCoroutine(loadingAnimation);
-
         // 隐藏加载面板
         loadingPanel.SetActive(false);
-
-
-        ModelPreprocessor.SetRootObject(model);
+        yield return new WaitForEndOfFrame();
+    
+        Debug.Log($"modelRoot 子对象数: {modelRoot.childCount}");
         ModelPreprocessor.InitImportModel();
+        if (HierarchyUI.Instance != null)
+        {
+            HierarchyUI.Instance.ReBuildHierarchy();
+        }
+        else
+        {
+            Debug.LogError("HierarchyUI.Instance is null! Make sure HierarchyUI is in the scene.");
+        }
+
     }
     private IEnumerator LoadingAnimation()
     {

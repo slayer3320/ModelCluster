@@ -32,8 +32,8 @@ public class HierarchyUI : MonoBehaviour
     {
         BuildHierarchy(targetRoot, contentPanel);
 
-        mergeButton.onClick.AddListener(MergeSelectedObjects);
-        submergeButton.onClick.AddListener(SubmergeSelectedObjects);
+        // mergeButton.onClick.AddListener(MergeSelectedObjects);
+        // submergeButton.onClick.AddListener(SubmergeSelectedObjects);
         exportButton.onClick.AddListener(() =>
         {
             string objPath = StandaloneFileBrowser.SaveFilePanel("Save File", Application.dataPath, targetRoot.name, "obj");
@@ -142,7 +142,7 @@ public class HierarchyUI : MonoBehaviour
         // });
     }
 
-    void ReBuildHierarchy()
+    public void ReBuildHierarchy()
     {
         uiItems.Clear();
         selectedItems.Clear();

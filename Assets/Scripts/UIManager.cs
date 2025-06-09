@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
+using SFB;
 
 public class UIManager : MonoBehaviour
 {
@@ -48,6 +49,13 @@ public class UIManager : MonoBehaviour
     public TMP_Text zoomSpeedText;
     public TMP_Text cameraSpeedText;
 
+    void Start()
+    {
+        if (ModelController == null)
+            Debug.LogError("ModelController not assigned！");
+        if (CameraController == null)
+            Debug.LogError("CameraController not assigned！");
+    }
     void Update()
     {
         // 每帧显示当前速度值
@@ -55,6 +63,36 @@ public class UIManager : MonoBehaviour
         zoomSpeedText.text = "缩放速度:" + ModelController.zoomSpeed.ToString("F2");
         cameraSpeedText.text = "相机移速:" + CameraController.moveSpeed.ToString("F2");
     }
+    // HierarchyModule的主UI封装接口
+    public void OnClickMerge()
+    {
+        if (HierarchyUI.Instance != null)
+        {
+            HierarchyUI.Instance.MergeSelectedObjects();
+        }
+        else
+        {
+            Debug.LogError("HierarchyUI.Instance is null! Make sure HierarchyUI is in the scene.");
+        }
+    }
+    public void OnClickSubMerge()
+    {
+        if (HierarchyUI.Instance != null)
+        {
+            HierarchyUI.Instance.SubmergeSelectedObjects();
+        }
+        else
+        {
+            Debug.LogError("HierarchyUI.Instance is null! Make sure HierarchyUI is in the scene.");
+        }
+    }
+    public void OnClickExport()
+    {
+        string objPath = StandaloneFileBrowser.SaveFilePanel("Save File", Application.dataPath, modelRoot.name, "obj");
+        RuntimeOBJExporter.instance.ExportGameObjectsToOBJ(Main.current.GetAllChildrenObjects(Main.current.gameObject), Main.current.gameObject, objPath);
+
+    }
+
 
     // 触发显示和隐藏子窗口及组件的方法
 

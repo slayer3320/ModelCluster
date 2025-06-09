@@ -4,49 +4,46 @@ using System.Collections.Generic;
 public class ModelPreprocessor : MonoBehaviour
 {
     public float targetMaxSize = 200f;
-    public GameObject rootObject;
+    public GameObject ModelRoot;
 
     void Start()
     {
         InitImportModel();
     }
-    public void SetRootObject(GameObject newRoot)
-    {
-        rootObject = newRoot;
-    }
+
     public void InitImportModel()
     {
-        if (rootObject == null)
+        if (ModelRoot == null)
         {
-            Debug.LogWarning("请在 Inspector 中指定 rootObject");
+            Debug.LogWarning("请在 Inspector 中指定 ModelRoot");
             return;
         }
-
-        PreprocessModel(rootObject.transform);
+        
+        PreprocessModel(ModelRoot.transform);
     }
 
-    void PreprocessModel(Transform modelRoot)
+    void PreprocessModel(Transform RootTransform)
     {
         // Step 1: 重命名所有子对象
-        GameObject[] children = GetAllChildrenObjects(modelRoot.gameObject);
+        GameObject[] children = GetAllChildrenObjects(RootTransform.gameObject);
         Debug.Log($"处理了 {children.Length} 个子对象（已重命名）");
 
         // Step 2: 缩放模型到目标尺寸
-        Bounds bounds = GetCombinedBounds(modelRoot);
+        Bounds bounds = GetCombinedBounds(RootTransform);
         float maxSize = Mathf.Max(bounds.size.x, bounds.size.y, bounds.size.z);
         float scaleFactor = targetMaxSize / maxSize;
-        modelRoot.localScale *= scaleFactor;
+        RootTransform.localScale *= scaleFactor;
 
         // Step 3: 重新计算 bounds 和居中
-        bounds = GetCombinedBounds(modelRoot);
-        Vector3 centerOffset = bounds.center - modelRoot.position;
+        bounds = GetCombinedBounds(RootTransform);
+        Vector3 centerOffset = bounds.center - RootTransform.position;
 
-        foreach (Transform child in modelRoot)
+        foreach (Transform child in RootTransform)
         {
             child.position -= centerOffset;
         }
 
-        Debug.Log($"[ModelPreprocessor] {modelRoot.name} 缩放系数：{scaleFactor:F4}，模型中心已对齐 pivot。");
+        Debug.Log($"[ModelPreprocessor] {RootTransform.name} 缩放系数：{scaleFactor:F4}，模型中心已对齐 pivot。");
     }
 
     GameObject[] GetAllChildrenObjects(GameObject parent)
@@ -73,7 +70,7 @@ public class ModelPreprocessor : MonoBehaviour
         if (parts.Length > 0)
         {
             obj.name = parts[0];
-            Debug.Log($"重命名：{original} → {obj.name}");
+            // Debug.Log($"重命名：{original} → {obj.name}");
         }
     }
 
