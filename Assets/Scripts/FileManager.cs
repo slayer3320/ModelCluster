@@ -72,7 +72,7 @@ public class FileManager : MonoBehaviour
         }
         else
         {
-            Debug.LogError("HierarchyUI.Instance is null! Make sure HierarchyUI is in the scene.");
+            Debug.LogWarning("HierarchyUI.Instance is null! Make sure HierarchyUI is in the scene.");
         }
 
     }

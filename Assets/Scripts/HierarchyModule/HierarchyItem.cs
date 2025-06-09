@@ -14,10 +14,15 @@ public class HierarchyItem : MonoBehaviour
     public Toggle toggle;
     public TextMeshProUGUI  text;
     public Transform verticalLayoutGroup;
-
     public int childCount = 0;
     public int actualChildCount = 0;
     public bool showChildren = true;
+    
+    public Color normalColor_on;    
+    public Color normalColor_off;    
+    public Color noChildColor;     
+
+
 
     void Awake()
     {
@@ -26,7 +31,7 @@ public class HierarchyItem : MonoBehaviour
             if (isOn)
             {
                 //修改normal color为灰色
-                toggle.GetComponent<Image>().color = new Color(0.5f, 0.5f, 0.5f, 1);
+                toggle.GetComponent<Image>().color = normalColor_on;
                 
                 // verticalLayoutGroup.GetComponentsInChildren<HierarchyItem>(true).ToList().ForEach(item =>
                 // {
@@ -36,7 +41,7 @@ public class HierarchyItem : MonoBehaviour
             else
             {
                 //修改normal color为白色
-                toggle.GetComponent<Image>().color = new Color(1, 1, 1, 1);
+                toggle.GetComponent<Image>().color = normalColor_off;
                 
                 // verticalLayoutGroup.GetComponentsInChildren<HierarchyItem>(true).ToList().ForEach(item =>
                 // {
@@ -70,19 +75,20 @@ public class HierarchyItem : MonoBehaviour
     {
         if (actualChildCount == 0)
         {
-            expandButton.GetComponent<Image>().color = new Color(1, 1, 1, 0);
+            expandButton.GetComponent<Image>().color = noChildColor;
         }
         else
         {
+            expandButton.GetComponent<Image>().color = normalColor_on;
             if (showChildren)
             {
                 expandButton.GetComponent<Image>().sprite = HierarchyUI.Instance.expandSprite;
-                expandButton.GetComponent<Image>().color = new Color(1, 1, 1, 1);
+
             }
             else
             {
                 expandButton.GetComponent<Image>().sprite = HierarchyUI.Instance.collapseSprite;
-                expandButton.GetComponent<Image>().color = new Color(1, 1, 1, 1);
+
             }
         }
 
