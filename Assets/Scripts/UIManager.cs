@@ -18,6 +18,12 @@ public class UIManager : MonoBehaviour
     public Slider rotateSlider;
     public Slider zoomSlider;
     public Slider cameraSlider;
+    public Slider scaleSlider; //层级UI缩放
+
+    //HUI大小
+    public RectTransform HUIcontent;
+    public float minScale = 0.5f; // 缩放范围
+    public float maxScale = 1.0f;
 
     //子窗口
     public GameObject HelpPanel; //帮助(panel)
@@ -32,15 +38,6 @@ public class UIManager : MonoBehaviour
     //提示
     public GameObject FreeCameraHelp; // 自由视角提示(text)
 
-    //预制体和精灵
-    public GameObject itemPrefab;
-    public Sprite expandSprite;
-    public Sprite collapseSprite;
-
-
-    //颜色
-    public Color highlightColor = Color.red;//模型部件选中高光：红色
-
     // 模型对象
     public Transform modelRoot;
 
@@ -48,13 +45,19 @@ public class UIManager : MonoBehaviour
     public TMP_Text rotateSpeedText;
     public TMP_Text zoomSpeedText;
     public TMP_Text cameraSpeedText;
-
+    public TMP_Text HUIscaleText;
     void Start()
     {
         if (ModelController == null)
             Debug.LogError("ModelController not assigned！");
         if (CameraController == null)
             Debug.LogError("CameraController not assigned！");
+
+        scaleSlider.minValue = minScale;
+        scaleSlider.maxValue = maxScale;
+        scaleSlider.value = 1.0f;
+
+        scaleSlider.onValueChanged.AddListener(UpdateScale);
     }
     void Update()
     {
@@ -62,6 +65,15 @@ public class UIManager : MonoBehaviour
         rotateSpeedText.text = "旋转角度:" + ModelController.rotateSpeed.ToString("F2");
         zoomSpeedText.text = "缩放速度:" + ModelController.zoomSpeed.ToString("F2");
         cameraSpeedText.text = "相机移速:" + CameraController.moveSpeed.ToString("F2");
+    }
+    //更新HUI大小文本
+    void UpdateScale(float value)
+    {
+        if (HUIcontent != null)
+        {
+            HUIcontent.localScale = Vector3.one * value;
+            HUIscaleText.text = "缩放比例:" + value.ToString("F2");
+        }
     }
     // HierarchyModule的主UI封装接口
     public void OnClickMerge()
@@ -113,6 +125,7 @@ public class UIManager : MonoBehaviour
         ViewControl.SetActive(true);
         HideFileOperation();
         HideMergeHierarchy();
+        HideHierarchyPanel();
 
     }
     public void HideViewControl()
@@ -125,6 +138,7 @@ public class UIManager : MonoBehaviour
         FileOperation.SetActive(true);
         HideViewControl();
         HideMergeHierarchy();
+        HideHierarchyPanel();
     }
     public void HideFileOperation()
     {

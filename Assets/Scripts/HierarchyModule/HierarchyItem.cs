@@ -11,28 +11,35 @@ public class HierarchyItem : MonoBehaviour
     public RectTransform rectTransform;
 
     public Button expandButton;
+
+    public Button editnameButton;
     public Toggle toggle;
-    public TextMeshProUGUI  text;
+    public TextMeshProUGUI text;
+    public TMP_InputField nameInput;
+    public GameObject boundObject;
     public Transform verticalLayoutGroup;
     public int childCount = 0;
     public int actualChildCount = 0;
     public bool showChildren = true;
-    
-    public Color normalColor_on;    
-    public Color normalColor_off;    
-    public Color noChildColor;     
+
+    public Color normalColor_on;
+    public Color normalColor_off;
+    public Color noChildColor;
 
 
 
     void Awake()
     {
+        editnameButton.gameObject.SetActive(false);
+        nameInput.gameObject.SetActive(false);
         toggle.onValueChanged.AddListener(isOn =>
         {
             if (isOn)
             {
                 //修改normal color为灰色
                 toggle.GetComponent<Image>().color = normalColor_on;
-                
+                editnameButton.gameObject.SetActive(true);
+
                 // verticalLayoutGroup.GetComponentsInChildren<HierarchyItem>(true).ToList().ForEach(item =>
                 // {
                 //     item.toggle.isOn = true;
@@ -42,12 +49,36 @@ public class HierarchyItem : MonoBehaviour
             {
                 //修改normal color为白色
                 toggle.GetComponent<Image>().color = normalColor_off;
-                
+                editnameButton.gameObject.SetActive(false);
                 // verticalLayoutGroup.GetComponentsInChildren<HierarchyItem>(true).ToList().ForEach(item =>
                 // {
                 //     item.toggle.isOn = false;
                 // });
             }
+        });
+
+        // 点击编辑按钮，显示输入框并赋值当前名字
+        editnameButton.onClick.AddListener(() =>
+        {
+            nameInput.text = text.text;
+            nameInput.gameObject.SetActive(true);
+            nameInput.Select(); // 聚焦
+        });
+
+        // 当用户按下 Enter 或失去焦点时提交
+        nameInput.onEndEdit.AddListener(newName =>
+        {
+            if (!string.IsNullOrWhiteSpace(newName))
+            {
+                text.text = newName;
+                gameObject.name = newName; // 更新 root.name
+                if (boundObject != null)
+                {
+                    boundObject.name = newName; // 👈 更新对应 GameObject 的名称
+                }
+
+            }
+            nameInput.gameObject.SetActive(false);
         });
     }
 
@@ -92,7 +123,7 @@ public class HierarchyItem : MonoBehaviour
             }
         }
 
-        
+
     }
 
 }

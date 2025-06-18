@@ -18,7 +18,7 @@ public class ModelPreprocessor : MonoBehaviour
             Debug.LogWarning("请在 Inspector 中指定 ModelRoot");
             return;
         }
-        
+
         PreprocessModel(ModelRoot.transform);
     }
 
@@ -44,6 +44,8 @@ public class ModelPreprocessor : MonoBehaviour
         }
 
         Debug.Log($"[ModelPreprocessor] {RootTransform.name} 缩放系数：{scaleFactor:F4}，模型中心已对齐 pivot。");
+
+        ModelRoot.name = "NewModelRoot";
     }
 
     GameObject[] GetAllChildrenObjects(GameObject parent)
@@ -66,7 +68,8 @@ public class ModelPreprocessor : MonoBehaviour
     void ProcessGameObject(GameObject obj)
     {
         string original = obj.name;
-        string[] parts = obj.name.Split('_');
+
+        string[] parts = obj.name.Split(new char[] { '_', ' ' }, System.StringSplitOptions.RemoveEmptyEntries);
         if (parts.Length > 0)
         {
             obj.name = parts[0];

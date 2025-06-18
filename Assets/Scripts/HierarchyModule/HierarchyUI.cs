@@ -23,33 +23,32 @@ public class HierarchyUI : MonoBehaviour
     public Sprite expandSprite;
     public Sprite collapseSprite;
 
-    public Button mergeButton;
-    public Button submergeButton;
-    public Button importButton;
-    public Button exportButton;
 
+    private bool isFirstBuild = true;
     void Start()
     {
         BuildHierarchy(targetRoot, contentPanel);
-
+        isFirstBuild = false;
         // mergeButton.onClick.AddListener(MergeSelectedObjects);
         // submergeButton.onClick.AddListener(SubmergeSelectedObjects);
-        exportButton.onClick.AddListener(() =>
-        {
-            string objPath = StandaloneFileBrowser.SaveFilePanel("Save File", Application.dataPath, targetRoot.name, "obj");
+        // exportButton.onClick.AddListener(() =>
+        // {
+        //     string objPath = StandaloneFileBrowser.SaveFilePanel("Save File", Application.dataPath, targetRoot.name, "obj");
 
-            RuntimeOBJExporter.instance.ExportGameObjectsToOBJ(Main.current.GetAllChildrenObjects(Main.current.gameObject), Main.current.gameObject, objPath);
-        });
+        //     RuntimeOBJExporter.instance.ExportGameObjectsToOBJ(Main.current.GetAllChildrenObjects(Main.current.gameObject), Main.current.gameObject, objPath);
+        // });
 
     }
 
     private int mergeIdx = 1;
+
     public void MergeSelectedObjects()
     {
         if (selectedItems.Count > 1)
         {
             GameObject mergedObject = new GameObject("MergedObject" + mergeIdx++);
             mergedObject.transform.SetParent(targetRoot);
+            mergedObject.transform.SetSiblingIndex(0);
             foreach (var item in selectedItems)
             {
                 GameObject obj = uiItems.FirstOrDefault(x => x.Value == item.gameObject.transform.parent.gameObject).Key;
@@ -108,7 +107,11 @@ public class HierarchyUI : MonoBehaviour
     void BuildHierarchy(Transform root, Transform uiParent)
     {
         //if (root.gameObject.layer == LayerMask.NameToLayer("NoShow")) return;
-
+        // ✅ 如果是 targetRoot 下的第一个子物体，重命名为 "UnmergedObject"
+        if (root.parent == targetRoot && root.GetSiblingIndex() == 0 && isFirstBuild)
+        {
+            root.name = "UnmergedObjects";
+        }
         var uiItem = Instantiate(itemPrefab, uiParent);
         uiItems.Add(root.gameObject, uiItem);
 
@@ -130,7 +133,7 @@ public class HierarchyUI : MonoBehaviour
             }
         });
         itemScript.text.text = root.name;
-
+        itemScript.boundObject = root.gameObject;
         foreach (Transform child in root)
         {
             BuildHierarchy(child, itemScript.verticalLayoutGroup);

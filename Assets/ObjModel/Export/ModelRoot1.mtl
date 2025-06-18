@@ -1,0 +1,69 @@
+newmtl galvanis
+Kd 0.717647 0.717647 0.717647
+map_Kd galvanis.png
+illum 2
+
+newmtl _PowderBlue_
+Kd 0.6901961 0.878431 0.901961
+illum 2
+
+newmtl FrontColor
+Kd 0.8823529 0.8823529 0.784314
+illum 2
+
+newmtl _DimGray_
+Kd 0.4117649 0.4117649 0.4117649
+illum 2
+
+newmtl _Red_
+Kd 1 0 0
+illum 2
+
+newmtl _Gray_
+Kd 0.501961 0.501961 0.501961
+illum 2
+
+newmtl _Gray_Glass_
+Kd 0.501961 0.501961 0.501961
+illum 2
+
+newmtl _Red_Glass_
+Kd 1 0 0
+illum 2
+
+newmtl _Orange_Glass_
+Kd 1 0.647059 0
+illum 2
+
+newmtl _Silver_
+Kd 0.752941 0.752941 0.752941
+illum 2
+
+newmtl _Charcoal_
+Kd 0.137255 0.137255 0.137255
+illum 2
+
+newmtl _PaleGoldenrod_
+Kd 0.933333 0.909804 0.666667
+illum 2
+
+newmtl Color_008
+Kd 0.117647 0.117647 0.117647
+illum 2
+
+newmtl _DarkGray_1
+Kd 0.317647 0.317647 0.317647
+illum 2
+
+newmtl Color_006
+Kd 0.337255 0.337255 0.337255
+illum 2
+
+newmtl _Dark_Olive_
+Kd 0.384314 0.392157 0.266667
+illum 2
+
+newmtl _Gray8_
+Kd 0.266667 0.266667 0.266667
+illum 2
+

@@ -54,18 +54,18 @@ public class FileManager : MonoBehaviour
             Destroy(child.gameObject);
 
         // 加载新模型
-        model = new OBJLoaderWithMaterials().Load(filePath);
+        model = new OBJLoader().Load(filePath);
+        model.name = "UnmergedObjects";
         model.transform.SetParent(modelRoot, false);
-
-        // 转URP材质
-        ConvertToURPMaterial(model);
 
         // 隐藏加载面板
         loadingPanel.SetActive(false);
         yield return new WaitForEndOfFrame();
-    
+
         Debug.Log($"modelRoot 子对象数: {modelRoot.childCount}");
+
         ModelPreprocessor.InitImportModel();
+
         if (HierarchyUI.Instance != null)
         {
             HierarchyUI.Instance.ReBuildHierarchy();
@@ -115,52 +115,8 @@ public class FileManager : MonoBehaviour
         }
     }
 
-   private void ConvertToURPMaterial(GameObject modelRoot)
-{
-    Shader urpShader = Shader.Find("Universal Render Pipeline/Lit");
-    if (urpShader == null)
-    {
-        Debug.LogError("URP Shader not found!");
-        return;
-    }
 
-    foreach (var renderer in modelRoot.GetComponentsInChildren<Renderer>())
-    {
-        Material[] oldMats = renderer.materials;
-        Material[] newMats = new Material[oldMats.Length];
 
-        for (int i = 0; i < oldMats.Length; i++)
-        {
-            Material oldMat = oldMats[i];
-            Material newMat = new Material(urpShader);
-
-            if (oldMat.HasProperty("_MainTex"))
-                newMat.SetTexture("_BaseMap", oldMat.mainTexture);
-            if (oldMat.HasProperty("_Color"))
-                newMat.SetColor("_BaseColor", oldMat.color);
-            if (oldMat.HasProperty("_BumpMap"))
-                newMat.SetTexture("_BumpMap", oldMat.GetTexture("_BumpMap"));
-            if (oldMat.HasProperty("_EmissionMap"))
-                newMat.SetTexture("_EmissionMap", oldMat.GetTexture("_EmissionMap"));
-
-            // 双面显示
-            newMat.SetInt("_Cull", (int)UnityEngine.Rendering.CullMode.Off);
-            newMats[i] = newMat;
-        }
-
-        renderer.materials = newMats;
-    }
-}
-    private Bounds GetBound(GameObject gameObj)
-    {
-        Bounds bound = new Bounds(gameObj.transform.position, Vector3.zero);
-        var rList = gameObj.GetComponentsInChildren<Renderer>();
-        foreach (Renderer r in rList)
-        {
-            bound.Encapsulate(r.bounds);
-        }
-        return bound;
-    }
 
 
 }

@@ -158,17 +158,7 @@ public class MTLLoader
             {
                 string materialName = processedLine.Substring(7);
 
-                // Try to use URP Lit shader first
-                Shader urpLitShader = Shader.Find("Universal Render Pipeline/Lit");
-
-                // fallback to default shader if URP shader not found (e.g., during editor tests)
-                if (urpLitShader == null)
-                {
-                    Debug.LogError("URP Lit Shader not found! Falling back to default (pink may appear).");
-                    urpLitShader = Shader.Find("Standard (Specular setup)");
-                }
-
-                var newMtl = new Material(urpLitShader) { name = materialName };
+                var newMtl = new Material(Shader.Find("Universal Render Pipeline/Lit")) { name = materialName };
                 mtlDict[materialName] = newMtl;
                 currentMaterial = newMtl;
 
@@ -185,7 +175,7 @@ public class MTLLoader
                 var currentColor = currentMaterial.GetColor("_Color");
                 var kdColor = OBJLoaderHelper.ColorFromStrArray(splitLine);
 
-                currentMaterial.SetColor("_Color", new Color(kdColor.r, kdColor.g, kdColor.b, currentColor.a));
+                currentMaterial.SetColor("_BaseColor", new Color(kdColor.r, kdColor.g, kdColor.b, currentColor.a));
                 continue;
             }
 
@@ -195,42 +185,27 @@ public class MTLLoader
                 string texturePath = GetTexPathFromMapStatement(processedLine, splitLine);
                 if (texturePath == null)
                 {
-                    continue;
+                    continue; //invalid args or sth
                 }
 
                 var KdTexture = TryLoadTexture(texturePath);
+                currentMaterial.SetTexture("_BaseMap", KdTexture);
+                currentMaterial.EnableKeyword("_BASEMAP");
 
-                // 👇 更新为 URP Shader 属性
-                if (KdTexture != null)
+                //set transparent mode if the texture has transparency
+                if (KdTexture != null && (KdTexture.format == TextureFormat.DXT5 || KdTexture.format == TextureFormat.ARGB32))
                 {
-                    if (currentMaterial.HasProperty("_BaseMap"))
-                    {
-                        currentMaterial.SetTexture("_BaseMap", KdTexture);
-                    }
-                    else if (currentMaterial.HasProperty("_MainTex"))
-                    {
-                        currentMaterial.SetTexture("_MainTex", KdTexture);
-                    }
-
-                    //透明贴图处理
-                    if (KdTexture.format == TextureFormat.DXT5 || KdTexture.format == TextureFormat.ARGB32)
-                    {
-                        OBJLoaderHelper.EnableMaterialTransparency(currentMaterial);
-                    }
-
-                    if (Path.GetExtension(texturePath).ToLower() == ".dds")
-                    {
-                        currentMaterial.mainTextureScale = new Vector2(1f, -1f);
-                    }
+                    OBJLoaderHelper.EnableMaterialTransparency(currentMaterial);
                 }
-                else
+
+                //flip texture if this is a dds
+                if (Path.GetExtension(texturePath).ToLower() == ".dds")
                 {
-                    Debug.LogWarning($"[MTLLoader] Failed to load texture: {texturePath}");
+                    currentMaterial.mainTextureScale = new Vector2(1f, -1f);
                 }
 
                 continue;
             }
-
 
             //bump map
             if (splitLine[0] == "map_Bump" || splitLine[0] == "map_bump")
