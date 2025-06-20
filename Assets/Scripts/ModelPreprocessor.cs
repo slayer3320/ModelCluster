@@ -8,7 +8,7 @@ public class ModelPreprocessor : MonoBehaviour
 
     void Start()
     {
-        InitImportModel();
+        // InitImportModel();
     }
 
     public void InitImportModel()
@@ -18,7 +18,6 @@ public class ModelPreprocessor : MonoBehaviour
             Debug.LogWarning("请在 Inspector 中指定 ModelRoot");
             return;
         }
-
         PreprocessModel(ModelRoot.transform);
         AddColliders(ModelRoot);
     }

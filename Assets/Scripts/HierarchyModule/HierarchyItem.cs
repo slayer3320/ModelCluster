@@ -9,10 +9,9 @@ public class HierarchyItem : MonoBehaviour
 {
     public LayoutElement parentLayoutElement;
     public RectTransform rectTransform;
-
     public Button expandButton;
-
     public Button editnameButton;
+    public Button positionButton;
     public Toggle toggle;
     public TextMeshProUGUI text;
     public TMP_InputField nameInput;
@@ -31,6 +30,7 @@ public class HierarchyItem : MonoBehaviour
     void Awake()
     {
         editnameButton.gameObject.SetActive(false);
+        positionButton.gameObject.SetActive(false);
         nameInput.gameObject.SetActive(false);
         toggle.onValueChanged.AddListener(isOn =>
         {
@@ -39,6 +39,7 @@ public class HierarchyItem : MonoBehaviour
                 //修改normal color为灰色
                 toggle.GetComponent<Image>().color = normalColor_on;
                 editnameButton.gameObject.SetActive(true);
+                positionButton.gameObject.SetActive(true);
 
                 // verticalLayoutGroup.GetComponentsInChildren<HierarchyItem>(true).ToList().ForEach(item =>
                 // {
@@ -50,6 +51,7 @@ public class HierarchyItem : MonoBehaviour
                 //修改normal color为白色
                 toggle.GetComponent<Image>().color = normalColor_off;
                 editnameButton.gameObject.SetActive(false);
+                positionButton.gameObject.SetActive(false);
                 // verticalLayoutGroup.GetComponentsInChildren<HierarchyItem>(true).ToList().ForEach(item =>
                 // {
                 //     item.toggle.isOn = false;
@@ -86,6 +88,20 @@ public class HierarchyItem : MonoBehaviour
     {
         Expand();
         ChangeToggleSprite();
+    }
+    void Start()
+    {
+        positionButton.onClick.AddListener(() =>
+        {
+            if (boundObject != null && PositionWindow.Instance != null)
+            {
+                PositionWindow.Instance.Open(boundObject);
+            }
+            else
+            {
+                Debug.LogWarning("PositionWindow.Instance is null or boundObject is null");
+            }
+        });
     }
 
     public void Expand()

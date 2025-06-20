@@ -9,16 +9,17 @@ public class CameraController : MonoBehaviour
     public GameObject ModelRoot;
 
     [Header("Camera Settings:FreeViewMode")]
-    public float moveSpeed = 100;            // 摄像机移动速度（WASD）
-    public float mouseSensitivity = 2f;       // 鼠标灵敏度
+    public float moveSpeed = 100;            // 摄像机移动速度（WASD）：相机移速
+    public float mouseSensitivity = 2f;       // 鼠标灵敏度：视角灵敏度
     public float minVerticalAngle = -80f;     // 最小垂直角度
     public float maxVerticalAngle = 80f;      // 最大垂直角度
 
+
     [Header("Camera Settings:General")]
-    public float rotationSpeed = 5f; //鼠标旋转摄像机速度
+    public float rotationSpeed = 5f; // 鼠标旋转摄像机速度：转动视角速度
     public float minDistance = 20f;  // 摄像机最小距离
     public float maxDistance = 800f; // 摄像机最大距离
-    public float zoomSpeed = 10f; //缩放速度
+    public float zoomSpeed = 10f; //缩放速度：滚轮缩放速度
 
     private float currentVerticalAngle = 0f;     // 当前绕X轴的旋转（上下）
     private float currentHorizontalAngle = 0f;   // 当前绕Y轴的旋转（左右）
@@ -94,8 +95,13 @@ public class CameraController : MonoBehaviour
             float scroll = Input.mouseScrollDelta.y;
             if (scroll != 0f)
             {
-                // 缩放距离，并限制范围
-                distance -= scroll * zoomSpeed;
+                if (scroll != 0f)
+                {
+                    distance -= scroll * zoomSpeed;
+                    distance = Mathf.Clamp(distance, minDistance, maxDistance);
+                }
+
+
             }
             // 计算摄像机在当前旋转角度下的位置
             Vector3 dir = new Vector3(0, 0, -distance); // 沿-z方向向后拉
@@ -112,7 +118,7 @@ public class CameraController : MonoBehaviour
     {
         isFreeViewMode = true;
         LockCursor(true);
-            // 重新定位摄像机到模型附近
+        // 重新定位摄像机到模型附近
         lookAtPoint = CalculateModelCenter(ModelRoot); // 更新中心
         Vector3 dir = new Vector3(0, 0, -distance); // 向后拉
         Quaternion rotation = Quaternion.Euler(currentY, currentX, 0);
@@ -122,7 +128,7 @@ public class CameraController : MonoBehaviour
         transform.LookAt(lookAtPoint);
         currentVerticalAngle = transform.eulerAngles.x;
         currentHorizontalAngle = transform.eulerAngles.y;
-        }
+    }
 
     public void ExitFreeViewMode()
     {
@@ -177,10 +183,31 @@ public class CameraController : MonoBehaviour
         Cursor.visible = !locked;
     }
 
-    // 给 UIManager 调用：设置移动速度
+    // 给 UIManager 调用：视角设置
     public void SetCameraSpeed(float value)
     {
         moveSpeed = value;
         Debug.Log("Camera moveSpeed set to: " + moveSpeed);
+    }
+    public void SetmouseSensitivity(float value)
+    {
+        mouseSensitivity = value;
+        Debug.Log("mouseSensitivity set to: " + mouseSensitivity);
+    }
+    public void SetrotationSpeed(float value)
+    {
+        rotationSpeed = value;
+        Debug.Log("rotationSpeed set to: " + rotationSpeed);
+    }
+    public void SetRangeofDistance(float value)
+    {
+        minDistance = value;
+        maxDistance = minDistance * 40;
+        Debug.Log("Camera Range of Distance set to: " + minDistance + "to" + maxDistance);
+    }
+    public void SetzoomSpeed(float value)
+    {
+        zoomSpeed = value;
+        Debug.Log("Camera zoomSpeed set to: " + zoomSpeed);
     }
 }

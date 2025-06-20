@@ -4,11 +4,10 @@ using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
 using SFB;
+using System.Windows.Forms;
 
 public class UIManager : MonoBehaviour
 {
-    // 引用模型控制脚本
-    public ModelController ModelController;
     // 引用相机控制脚本
     public CameraController CameraController;
     // 引用层级管理脚本
@@ -27,8 +26,11 @@ public class UIManager : MonoBehaviour
 
     //子窗口
     public GameObject HelpPanel; //帮助(panel)
+    public GameObject OpenPanel;
     public GameObject HierarchyPanel; // 模型层级结构子窗(panel)
-    public GameObject TextView; // 文本查看(panel)
+    public GameObject ModifyPanel; // 位置调整子窗(panel)
+    public GameObject ViewPanel; // 视图子窗(panel)
+
 
     //按钮面板
     public GameObject FileOperation; // 文件操作(button)
@@ -42,14 +44,19 @@ public class UIManager : MonoBehaviour
     public Transform modelRoot;
 
     // 旋转和缩放速度文本信息
-    public TMP_Text rotateSpeedText;
-    public TMP_Text zoomSpeedText;
+    // public TMP_Text rotateSpeedText;
+
+
+    public TMP_Text viewSensityText;
     public TMP_Text cameraSpeedText;
+    public TMP_Text rotationSpeedText;
+    public TMP_Text RangeofDistanceText;
+    public TMP_Text zoomSpeedText;
+
     public TMP_Text HUIscaleText;
     void Start()
     {
-        if (ModelController == null)
-            Debug.LogError("ModelController not assigned！");
+
         if (CameraController == null)
             Debug.LogError("CameraController not assigned！");
 
@@ -62,9 +69,19 @@ public class UIManager : MonoBehaviour
     void Update()
     {
         // 每帧显示当前速度值
-        rotateSpeedText.text = "旋转角度:" + ModelController.rotateSpeed.ToString("F2");
-        zoomSpeedText.text = "缩放速度:" + ModelController.zoomSpeed.ToString("F2");
+        // rotateSpeedText.text = "旋转角度:" + ModelController.rotateSpeed.ToString("F2");
+        // zoomSpeedText.text = "缩放速度:" + ModelController.zoomSpeed.ToString("F2");
+        //视图设置
+        rotationSpeedText.text = "转动视角速度:" + CameraController.rotationSpeed.ToString("F2");
+        RangeofDistanceText.text = "相机距离:" + CameraController.minDistance.ToString("F2") + "~" + CameraController.maxDistance.ToString("F2");
+        zoomSpeedText.text = "滚轮缩放速度:" + CameraController.zoomSpeed.ToString("F2");
+
+
         cameraSpeedText.text = "相机移速:" + CameraController.moveSpeed.ToString("F2");
+        viewSensityText.text = "视角灵敏度:" + CameraController.mouseSensitivity.ToString("F2");
+
+
+
     }
     //更新HUI大小文本
     void UpdateScale(float value)
@@ -100,19 +117,29 @@ public class UIManager : MonoBehaviour
     }
     public void OnClickExport()
     {
-        string objPath = StandaloneFileBrowser.SaveFilePanel("Save File", Application.dataPath, modelRoot.name, "obj");
+        string objPath = StandaloneFileBrowser.SaveFilePanel("Save File", "", modelRoot.name, "obj");
+
         RuntimeOBJExporter.instance.ExportGameObjectsToOBJ(Main.current.GetAllChildrenObjects(Main.current.gameObject), Main.current.gameObject, objPath);
 
     }
 
 
     // 触发显示和隐藏子窗口及组件的方法
+    //Open窗口
+    public void ShowOpenPanel()
+    {
+        OpenPanel.SetActive(true);
+
+    }
+    public void HideOpenPanel()
+    {
+        OpenPanel.SetActive(false);
+    }
 
     //帮助窗口
     public void ShowHelpPanel()
     {
         HelpPanel.SetActive(true);
-        HideFreeCameraHelp();
 
     }
     public void HideHelpPanel()
@@ -126,11 +153,15 @@ public class UIManager : MonoBehaviour
         HideFileOperation();
         HideMergeHierarchy();
         HideHierarchyPanel();
+        HideViewPanel();
+        HideHelpPanel();
+        HideOpenPanel();
 
     }
     public void HideViewControl()
     {
         ViewControl.SetActive(false);
+        HideViewPanel();
     }
     //文件操作窗口
     public void ShowFileOperation()
@@ -139,11 +170,13 @@ public class UIManager : MonoBehaviour
         HideViewControl();
         HideMergeHierarchy();
         HideHierarchyPanel();
+        HideViewPanel();
+        HideHelpPanel();
+        HideOpenPanel();
     }
     public void HideFileOperation()
     {
         FileOperation.SetActive(false);
-        HideTextView();
     }
     //层级结构窗口
     public void ShowMergeHierarchy()
@@ -152,21 +185,28 @@ public class UIManager : MonoBehaviour
         ShowHierarchyPanel();
         HideViewControl();
         HideFileOperation();
+        HideViewPanel();
+        if (modelRoot == null || modelRoot.childCount == 0)
+        {
+            if (OpenPanel != null)
+            {
+                OpenPanel.SetActive(true);  // 显示提示面板
+            }
+        }
+        else
+        {
+            if (OpenPanel != null)
+            {
+                OpenPanel.SetActive(false);  // 有内容就隐藏提示面板
+            }
+        }
     }
     public void HideMergeHierarchy()
     {
         MergeHierarchy.SetActive(false);
-    }
-    //文件子窗口：obj文本
-    public void ShowTextView()
-    {
-        TextView.SetActive(true);
+
     }
 
-    public void HideTextView()
-    {
-        TextView.SetActive(false);
-    }
     //层级子窗口：模型层级选择
     public void ShowHierarchyPanel()
     {
@@ -176,8 +216,28 @@ public class UIManager : MonoBehaviour
     public void HideHierarchyPanel()
     {
         HierarchyPanel.SetActive(false);
+        HideModifyPanel();
     }
+    //模型层级选择子窗口：位置调整窗口
+    public void ShowModifyPanel()
+    {
+        ModifyPanel.SetActive(true);
 
+    }
+    public void HideModifyPanel()
+    {
+        ModifyPanel.SetActive(false);
+    }
+    //视图子窗口：视图设置
+    public void ShowViewPanel()
+    {
+        ViewPanel.SetActive(true);
+
+    }
+    public void HideViewPanel()
+    {
+        ViewPanel.SetActive(false);
+    }
     //自由视角提示
     public void ShowFreeCameraHelp()
     {
