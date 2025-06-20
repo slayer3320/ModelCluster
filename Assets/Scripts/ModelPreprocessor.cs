@@ -20,6 +20,7 @@ public class ModelPreprocessor : MonoBehaviour
         }
 
         PreprocessModel(ModelRoot.transform);
+        AddColliders(ModelRoot);
     }
 
     void PreprocessModel(Transform RootTransform)
@@ -91,6 +92,19 @@ public class ModelPreprocessor : MonoBehaviour
         }
 
         return bounds;
+    }
+
+    void AddColliders(GameObject root)
+    {
+        MeshFilter[] meshFilters = root.GetComponentsInChildren<MeshFilter>(true);
+        foreach (var mf in meshFilters)
+        {
+            GameObject go = mf.gameObject;
+            if (go.GetComponent<Collider>() == null)
+            {
+                go.AddComponent<MeshCollider>(); // 可换成 BoxCollider/MeshCollider
+            }
+        }
     }
 
 

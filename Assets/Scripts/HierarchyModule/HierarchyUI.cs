@@ -22,6 +22,7 @@ public class HierarchyUI : MonoBehaviour
     public Color highlightColor = Color.red;
     public Sprite expandSprite;
     public Sprite collapseSprite;
+    public ScrollRect scrollRect;
 
 
     private bool isFirstBuild = true;
@@ -99,6 +100,27 @@ public class HierarchyUI : MonoBehaviour
 
     void Update()
     {
+        if (Input.GetMouseButtonDown(0) && !EventSystem.current.IsPointerOverGameObject())
+        {
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            if (Physics.Raycast(ray, out RaycastHit hit))
+            {
+                GameObject clickedObject = hit.collider.gameObject;
+
+                // 检查点击的对象是否在 uiItems 映射中
+                if (uiItems.TryGetValue(clickedObject, out GameObject uiItem))
+                {
+                    // 获取 UI 控件并切换 toggle
+                    HierarchyItem item = uiItem.transform.GetChild(0).GetComponent<HierarchyItem>();
+
+                    // 切换 Toggle 状态（会自动触发 toggle.onValueChanged 中的高亮逻辑）
+                    item.toggle.isOn = !item.toggle.isOn;
+
+                    // 滚动到这个 UI 项目
+                    ScrollToItem(uiItem);
+                }
+            }
+        }
 
     }
 
@@ -107,7 +129,7 @@ public class HierarchyUI : MonoBehaviour
     void BuildHierarchy(Transform root, Transform uiParent)
     {
         //if (root.gameObject.layer == LayerMask.NameToLayer("NoShow")) return;
-        // ✅ 如果是 targetRoot 下的第一个子物体，重命名为 "UnmergedObject"
+        // 如果是 targetRoot 下的第一个子物体，重命名为 "UnmergedObject"
         if (root.parent == targetRoot && root.GetSiblingIndex() == 0 && isFirstBuild)
         {
             root.name = "UnmergedObjects";
@@ -169,5 +191,27 @@ public class HierarchyUI : MonoBehaviour
     }
 
 
+    public void ScrollToItem(GameObject uiItem)
+    {
+        if (uiItem == null || scrollRect == null) return;
+
+        RectTransform content = scrollRect.content;
+        RectTransform viewport = scrollRect.viewport;
+
+        // 获取 UI 项在 Content 中的 index（排第几个）
+        int index = uiItem.transform.GetSiblingIndex();
+
+        float itemHeight = 50f;
+        float contentHeight = content.rect.height;
+        float viewportHeight = viewport.rect.height;
+
+        // 目标中心点的偏移量（让目标项尽量显示在中间）
+        float targetY = index * itemHeight + itemHeight / 2f - viewportHeight / 2f;
+
+        // 将 targetY 映射到 normalizedPosition（0=底部，1=顶部）
+        float normalized = Mathf.Clamp01(targetY / (contentHeight - viewportHeight));
+
+        scrollRect.verticalNormalizedPosition = 1f - normalized;
+    }
 
 }
