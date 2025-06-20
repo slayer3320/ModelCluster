@@ -158,7 +158,7 @@ public class MTLLoader
             {
                 string materialName = processedLine.Substring(7);
 
-                var newMtl = new Material(Shader.Find("Universal Render Pipeline/Lit")) { name = materialName };
+                var newMtl = new Material(Shader.Find("Universal Render Pipeline/Unlit")) { name = materialName };
                 mtlDict[materialName] = newMtl;
                 currentMaterial = newMtl;
 
