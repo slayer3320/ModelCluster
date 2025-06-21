@@ -5,13 +5,13 @@ using UnityEngine;
 public class Main : MonoBehaviour
 {
     public static Main current;
-    
+
     void Awake()
     {
         current = this;
-        
+
         //ModelFlattener.Instance.FlattenHierarchy(this.gameObject);
-        
+
         //.GameObject[] objs = GameObject.FindObjectsOfType<GameObject>(true);
         //OBJExporter.ExportGameObjectsToOBJ(GetAllChildrenObjects(this.gameObject), @"C:\Users\andy2\Desktop\exportedObject.obj");
     }
@@ -32,7 +32,7 @@ public class Main : MonoBehaviour
             GetChildrenRecursive(child, list);
         }
     }
-    
+
     void ProcessGameObject(GameObject obj)
     {
         obj.name = obj.name.Split('_')[0];

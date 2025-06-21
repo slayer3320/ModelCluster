@@ -16,6 +16,7 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 using System;
+using System.Linq;
 using Dummiesman;
 #if UNITY_EDITOR
 using UnityEditor;
@@ -23,12 +24,13 @@ using UnityEditor;
 
 namespace Dummiesman
 {
-    public enum SplitMode {
+    public enum SplitMode
+    {
         None,
         Object,
         Material
     }
-    
+
     public class OBJLoader
     {
         //options
@@ -52,7 +54,7 @@ namespace Dummiesman
         [MenuItem("GameObject/Import From OBJ")]
         static void ObjLoadMenu()
         {
-            string pth =  EditorUtility.OpenFilePanel("Import OBJ", "", "obj");
+            string pth = EditorUtility.OpenFilePanel("Import OBJ", "", "obj");
             if (!string.IsNullOrEmpty(pth))
             {
                 System.Diagnostics.Stopwatch s = new System.Diagnostics.Stopwatch();
@@ -80,6 +82,7 @@ namespace Dummiesman
             {
                 if (File.Exists(Path.Combine(_objInfo.Directory.FullName, mtlLibPath)))
                 {
+                    Debug.Log($"Loading MTL library from OBJ directory: {mtlLibPath}");
                     Materials = new MTLLoader().Load(Path.Combine(_objInfo.Directory.FullName, mtlLibPath));
                     return;
                 }
@@ -87,6 +90,7 @@ namespace Dummiesman
 
             if (File.Exists(mtlLibPath))
             {
+                Debug.Log($"Loading MTL library from path: {mtlLibPath}");
                 Materials = new MTLLoader().Load(mtlLibPath);
                 return;
             }
@@ -103,6 +107,10 @@ namespace Dummiesman
             //var reader = new StringReader(inputReader.ReadToEnd());
 
             Dictionary<string, OBJObjectBuilder> builderDict = new Dictionary<string, OBJObjectBuilder>();
+            List<string> names = new List<string>();
+            List<string> parents = new List<string>();
+            Dictionary<string, string> nameToParent = new Dictionary<string, string>();
+
             OBJObjectBuilder currentBuilder = null;
             string currentMaterial = "default";
 
@@ -123,62 +131,91 @@ namespace Dummiesman
             };
 
             //create default object
-            setCurrentObjectFunc.Invoke("default");
+            //setCurrentObjectFunc.Invoke("default");
 
-			//var buffer = new DoubleBuffer(reader, 256 * 1024);
-			var buffer = new CharWordReader(reader, 4 * 1024);
+            //var buffer = new DoubleBuffer(reader, 256 * 1024);
+            var buffer = new CharWordReader(reader, 4 * 1024);
 
-			//do the reading
-			while (true)
+            //do the reading
+            while (true)
             {
-				buffer.SkipWhitespaces();
+                buffer.SkipWhitespaces();
 
-				if (buffer.endReached == true) {
-					break;
-				}
+                if (buffer.endReached == true)
+                {
+                    break;
+                }
 
-				buffer.ReadUntilWhiteSpace();
-				
+                buffer.ReadUntilWhiteSpace();
+
                 //comment or blank
                 if (buffer.Is("#"))
                 {
-					buffer.SkipUntilNewLine();
+                    buffer.SkipWhitespaces();
+                    buffer.ReadUntilNewLine();
+                    string comment = buffer.GetString();
+                    // Debug.Log(comment);
+                    if (comment.StartsWith("name:"))
+                    {
+                        string[] str = comment.Split(' ');
+                        names.Add(comment.Substring("name:".Length).Split(' ')[0]);
+                        if (str.Length == 1)
+                        {
+                            parents.Add("null");
+                            nameToParent.Add(str[0].Substring("name:".Length), "null");
+                        }
+                        else if (str.Length == 2)
+                        {
+                            parents.Add(str[1].Substring("parent:".Length));
+                            nameToParent.Add(str[0].Substring("name:".Length), str[1].Substring("parent:".Length));
+                        }
+                    }
+                    else
+                    {
+                        Debug.LogError($"Skipping {comment}");
+                    }
+
                     continue;
                 }
-				
-				if (Materials == null && buffer.Is("mtllib")) {
-					buffer.SkipWhitespaces();
-					buffer.ReadUntilNewLine();
-					string mtlLibPath = buffer.GetString();
-					LoadMaterialLibrary(mtlLibPath);
-					continue;
-				}
-				
-				if (buffer.Is("v")) {
-					Vertices.Add(buffer.ReadVector());
-					continue;
-				}
 
-				//normal
-				if (buffer.Is("vn")) {
+                if (Materials == null && buffer.Is("mtllib"))
+                {
+                    buffer.SkipWhitespaces();
+                    buffer.ReadUntilNewLine();
+                    string mtlLibPath = buffer.GetString();
+                    LoadMaterialLibrary(mtlLibPath);
+                    continue;
+                }
+
+                if (buffer.Is("v"))
+                {
+                    Vertices.Add(buffer.ReadVector());
+                    continue;
+                }
+
+                //normal
+                if (buffer.Is("vn"))
+                {
                     Normals.Add(buffer.ReadVector());
                     continue;
                 }
 
                 //uv
-				if (buffer.Is("vt")) {
+                if (buffer.Is("vt"))
+                {
                     UVs.Add(buffer.ReadVector());
                     continue;
                 }
 
                 //new material
-				if (buffer.Is("usemtl")) {
-					buffer.SkipWhitespaces();
-					buffer.ReadUntilNewLine();
-					string materialName = buffer.GetString();
+                if (buffer.Is("usemtl"))
+                {
+                    buffer.SkipWhitespaces();
+                    buffer.ReadUntilNewLine();
+                    string materialName = buffer.GetString();
                     currentMaterial = materialName;
 
-                    if(SplitMode == SplitMode.Material)
+                    if (SplitMode == SplitMode.Material)
                     {
                         setCurrentObjectFunc.Invoke(materialName);
                     }
@@ -186,7 +223,8 @@ namespace Dummiesman
                 }
 
                 //new object
-                if ((buffer.Is("o") || buffer.Is("g")) && SplitMode == SplitMode.Object) {
+                if ((buffer.Is("o") || buffer.Is("g")) && SplitMode == SplitMode.Object)
+                {
                     buffer.ReadUntilNewLine();
                     string objectName = buffer.GetString(1);
                     setCurrentObjectFunc.Invoke(objectName);
@@ -199,27 +237,31 @@ namespace Dummiesman
                     //loop through indices
                     while (true)
                     {
-						bool newLinePassed;
-						buffer.SkipWhitespaces(out newLinePassed);
-						if (newLinePassed == true) {
-							break;
-						}
+                        bool newLinePassed;
+                        buffer.SkipWhitespaces(out newLinePassed);
+                        if (newLinePassed == true)
+                        {
+                            break;
+                        }
 
                         int vertexIndex = int.MinValue;
                         int normalIndex = int.MinValue;
                         int uvIndex = int.MinValue;
 
-						vertexIndex = buffer.ReadInt();
-						if (buffer.currentChar == '/') {
-							buffer.MoveNext();
-							if (buffer.currentChar != '/') {
-								uvIndex = buffer.ReadInt();
-							}
-							if (buffer.currentChar == '/') {
-								buffer.MoveNext();
-								normalIndex = buffer.ReadInt();
-							}
-						}
+                        vertexIndex = buffer.ReadInt();
+                        if (buffer.currentChar == '/')
+                        {
+                            buffer.MoveNext();
+                            if (buffer.currentChar != '/')
+                            {
+                                uvIndex = buffer.ReadInt();
+                            }
+                            if (buffer.currentChar == '/')
+                            {
+                                buffer.MoveNext();
+                                normalIndex = buffer.ReadInt();
+                            }
+                        }
 
                         //"postprocess" indices
                         if (vertexIndex > int.MinValue)
@@ -255,24 +297,57 @@ namespace Dummiesman
                     normalIndices.Clear();
                     uvIndices.Clear();
 
-					continue;
+                    continue;
                 }
 
-				buffer.SkipUntilNewLine();
+                buffer.SkipUntilNewLine();
             }
 
             //finally, put it all together
             GameObject obj = new GameObject(_objInfo != null ? Path.GetFileNameWithoutExtension(_objInfo.Name) : "WavefrontObject");
             obj.transform.localScale = new Vector3(-1f, 1f, 1f);
 
+            int idx = 0;
+            Dictionary<string, GameObject> objects = new Dictionary<string, GameObject>();
             foreach (var builder in builderDict)
             {
                 //empty object
-                if (builder.Value.PushedFaceCount == 0)
-                    continue;
+                // if (builder.Value.PushedFaceCount == 0)
+                //     continue;
 
                 var builtObj = builder.Value.Build();
+                if (builder.Value.PushedFaceCount == 0)
+                {
+                    MonoHelper.DestroyImmediate(builtObj.GetComponent<MeshFilter>());
+                    MonoHelper.DestroyImmediate(builtObj.GetComponent<MeshRenderer>());
+                }
                 builtObj.transform.SetParent(obj.transform, false);
+                objects.Add(builtObj.transform.name, builtObj);
+            }
+
+
+
+            int parentIdx = 1;
+            foreach (var objky in objects)
+            {
+                //                Debug.Log(objky.Key + " " + nameToParent[objky.Key]);
+                if (nameToParent.ContainsKey(objky.Key))
+                {
+                    string parentName = nameToParent[objky.Key];
+                    if (parentName != "null")
+                    {
+                        if (objects.ContainsKey(parentName))
+                        {
+                            //Debug. Log($"Setting parent of {objky.Key} to {parentName}");
+                            objky.Value.transform.SetParent(objects[parentName].transform, false);
+                        }
+                        else
+                        {
+                            //GameObject parent = new GameObject("Parent " + parentIdx);
+                            //Debug.LogError(parentName + " not found");
+                        }
+                    }
+                }
             }
 
             return obj;
